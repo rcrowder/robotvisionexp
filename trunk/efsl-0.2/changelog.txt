@@ -1,0 +1,389 @@
+Changelog 0.2.9 RC6->RC7 - Martin Thomas
+########################################
+
+src/sd.c
+	major rewrite based on Chan's fat-module examples
+	new function sd_getDriveInfo mostly based on code from Chan
+	lock/unlock feature added for SD-cards - experimental!
+	  sf.net feature 1612416 - Thanks to Dario Pennisi 
+
+include/sd.h
+	added defines/declaration for lock/unlock
+
+src/mkfs.c
+	added function mkfs_makevfat12 based on
+	  sf.net feature 1588590 - Thanks to jra
+	
+include/mkfs.h
+	mkfs_makevfat12 declaration
+	
+src/ioman.c
+	fix from sf.net bug-report 1612409 - Thanks to Carrick
+	fix form sf.net buf-report 1760666 - Thanks to Alan Wood
+
+examples/arm_at91sam7/common/swi_handler.S
+	update (for user-swi - not used in example)
+
+examples/arm_at91sam7/openocd_env_info.cmd
+	modified openocd path and exe-name
+
+examples/arm_at91sam7/main.c
+	minor modifications and extensions
+
+
+--- The MCI interface is experimental ---
+
+integrated LPC2000 MCI-support from Juri Haberland
+	(for NXP LPC2000 with MCI interface i.e. LPC2368/2378):
+
+conf/config-sample-lpc2000_MCI.h 
+	this is basicly a #define HW_ENDPOINT_LPC2000_MCI -
+	  may be intergrated in config-sample-lpc2000.h later
+
+inc/debug.h
+	added defined(HW_ENDPOINT_LPC2000_MCI)
+	
+inc/interface.h
+	include for interfaces/lpc2000_mci.h
+	
+inc/interfaces/lpc2000_mci.h
+	new file
+	
+inc/interfaces/mmc.h
+	new file
+	
+src/interfaces/lpc2000_mci.c
+	new file
+	modified Juri Haberland's source:
+	- volatiles for delay-loop counters
+	- format-specifiers %.8X -> %08x
+	- helper function -> static
+	- FIFO read/write from/to unaligned buffer
+	- option for extended debugging-outputs only in this module
+	
+inc/interfaces/LPC2000_regs.h
+	added MCI Registers
+	added PINSEL4, PCONP Register (may be LPC23xx/24xx only)
+
+
+Makefile-LPC2000_MCI 
+	new file
+
+examples/arm_lpc2368/*
+	New small example application to test/demonstrate 
+	the MCI-interface. Tested with LPC2368 on Keil MCB2300 
+	development-board. 
+	*** But so far it does not work reliably. ***
+	
+docs/readme_arm7.txt
+	updated
+
+docs/pages/arm7.tex
+	updated
+
+Changelog 0.2.9 RC5->RC6 - Martin Thomas
+########################################
+
+src/mkfs.c
+	fixed typo I made during the modification. Thanks to
+	Dieter Wirtz for the report.
+
+Changelog RC4->RC5 - Martin Thomas
+##################################
+
+src/interfaces/at91_sd.c
+	corrected bitmasks for PCS
+
+Changelog RC3->RC4 - Martin Thomas
+##################################
+
+src/interfaces/lpc2000_sd.c /.h
+	modifications from Mike Anton
+	select/unselect take iface as parameter
+
+src/interfaces/at91_sd.c /.h
+	added missing "send 0xff" to release DO after Card unselect	
+	select/unselect take iface as parameter
+
+src/interfaces/atmega128.c /.h
+	added missing "send 0xff" to release DO after Card unselect	
+	select/unselect take iface as parameter
+
+examples/arm*
+	included files to support flash-programming with OpenOCD
+	modified makefiles to use OpenOCD as default programming-software
+
+
+Changelog RC2->RC3 - Martin Thomas
+##################################
+
+changes.txt (this file)
+	renamed from changes_RC1_RC2.txt
+
+inc/interfaces/at91_sd.h
+	created to prepare an "infrastructure" for
+	AT91 target-specific inline-functions and makros used
+	in the endpoint-functions and the SD-Card utilities (sd.c)
+
+inc/interfaces/lpc2000_sd.h
+	created, see above (replaces lpc2000_spi from 0.2.8)
+
+inc/interfaces/arm_spi.h
+	removed, not longer needed
+	replaced by	at91_sd.h and lpc2000_sd.h
+	
+inc/interface.h
+	modifications to include target-specific *_sd.h
+	
+inc/interfaces/sd.h
+	modifications to include target-specific *_sd.h
+	
+src/interfaces/lpc2000_sd.c
+	renamed from lpc2000_spi.c
+
+src/interfaces/at91_sd.c
+	renamed from at91_spi.c
+
+src/interfaces/at91_sd.c
+	#include arm_spi.h -> #include at91_sd.h
+	
+src/interfaces/lpc2000_sd.c
+	#include arm_spi.h -> #include lpc2000_sd.h
+	#ifdef HW_ENDPOINT_LPC2000_SSPFIFO / void if_spiReadN()
+	  removed comment "mthomas" added for RC2
+	  (thanks to Mike Anton)
+	#ifdef HW_ENDPOINT_LPC2000_SSPFIFO / void if_spiReadN()
+	  commented out addtional checksum-send and extended comment
+	  (thanks to Mike Anton)
+	if_initInterface()
+	  added missing unselect-card on failures
+	  (thanks to Mike Anton)
+
+src/interface/at91_sd.c
+	some changes, still not realy sure about PCS and DMA 
+	but tests worked as expected
+	  
+src/interfaces/sd.c
+	use temporary pointer instead of array-indexing (faster at least on AVR)
+	added comments and some code not yet activated (#if 0)
+	see also "possible optimization" at the end of this text
+	(tested with the AT91-endpoint)
+
+Makefile-AT91
+	at91_spi.o -> at91_sd.o
+	added comment about options for gcc 4 unused code removal
+	
+Makefile-LPC2000
+	lpc2000_spi.o -> lpc2000_sd.o
+	added comment about options for gcc 4 unused code removal
+	
+doc/readme_arm7.txt
+	updated with new filenames (*_spi -> *.sd)
+
+doc/pages/arm7.tex
+	updated with new filenames (*_spi -> *.sd)
+
+examples/arm_at91sam7s/Makefile
+	at91_spi.c -> at91_sd.c
+
+examples/arm_at91sam7s/main.c
+	verify-test
+
+examples/arm_lpc2138/Makefile
+	lpc2000_spi.c -> lpc2000_sd.c
+	synced with newer "WinARM"-makefile-template also used in AT91-example
+	 (-f*-sections, bin-file creation etc.)
+
+examples/arm_lpc2138/LPC2138_ROM.ld
+	added .bss.* 
+	
+	
+Changelog RC1->RC2 - Martin Thomas
+##################################
+
+LPC2000_debug_printf.* 
+  renamed to efsl_debug_printf (used by AT91 and LPC2000) can be
+  used by any machine with "single" address-space. Advantage:
+  uses function-pointer for "putc", no need to hardcode the "debug-uart" 
+  Not prepared for AVR (where format-strings should be handled with "progmem")
+
+LPC2000_spi.h 
+  renamed to arm_spi.h (used by AT91 and LPC2000)
+
+debug.h
+  #include changed to "general" ARM debug
+
+config-AT91 & LPC2000
+  additional configuration option EFSL_ATTR_PACKED to
+    declare packed structures, default enable
+
+fs.h
+  used packed attribute if defined (avoids warning, maybe needed)
+
+interface.h
+  #include -> arm_spi.h
+
+sd.h
+  #include -> arm_spi.h
+
+extract.c
+  alternate implementation of ex_getb32/16 (don't remember why I did 
+   this some time ago), old code still in #if 0/endif
+
+fat.c
+  used ext_get32/16 to avoid warnings from the GNU-arm toolchain
+   at "high" warning level. Implemented with #if so can be turned off
+   easily, modifications enabled by default
+
+mkfs.c
+  used extract.h/.c macros for an alternate function, old code still there,
+    modifications enabled by default, should fix some aligment/endian issues
+    (at least warnings by arm-elf-gcc at high warning level)
+
+sd.c 
+  cardinit extended by CMD41 "retry-option" (tested by disabling the CMD1-"loop")
+
+arm7.tex
+  reorganized, some text about the at91-sd-endpoint
+    (not tested with TeX, maybe some syntax- or formating-errors)
+
+lpc2000_spi: 
+   added Mike Anton's FIFO code - made default in config 
+    (since SSP/SPI1 is default too)
+   added option for GPIO-chip-select (keep CS low during the complete 
+    tranfer with card according to SanDisk manual) - made default in config
+   added 0xff-writes after CS has been set high/unselect (see below)
+
+config-sample-lpc2000: 
+   new configuration options
+
+atmega128.h: 
+   configuration for CS Pin connection
+
+atmega128.c: 
+   used configuration-values for chip-select pin
+   set SPI-clock slow during init 
+   set SPI-clock fast after init
+   spi_init set/clear bits instead of complete register to avoid side-effect
+    with user-application
+   removed chip-select handling from spiSend (now in "upper-level" functions)
+   added CS-handling in init/read/write
+   added 0xff-writes after CS has been set high (off) to release the MMC DO as
+    recommended by ChaN (google elm-chan MMC)  
+   detection of file->sectorCount, proposal for " /* FIXME ASAP!! */ "
+    already used in the AT91 and LPC2000 endpoints
+
+changes in AT91-sd-endpoint and AT91 demo-application not documented here
+   AT91-endpoint has never been part of an "official" EFLS-version 
+   (main change: DMA support)
+
+LPC2138-example: 
+   added small benchmark. Should be similar to the on in the
+    AT91-example. Preliminary results:
+
+                                   [kB/sec]
+                              write        read  
+   ------------------------------------------------------
+   LPC2138      w/o FIFO        160         320
+   LPC2138      with FIFO       275         595
+   AT91SAM7S256 "polled" SPI    165         340
+   AT91SAM7S256 DMA/PDC         290         620
+
+   AT91SAM7S256 @ 48 MHz, LPC2138 @ 60 MHz. SanDisk 256MB SD-Card
+   See example-codes for details about the clock-setups and benchmark-code.
+
+
+
+TODO: 
+#####
+  NIOS/DSP: select/unselect CS "manualy" (my changes will NOT
+   break compatiblity with these endpoints, they still use "CS on send")
+  sd.c could be reorganised to move some code from the ARM interfaces into the
+   "sd.c card-utilities" and avoid neary same code in different interfaces
+  some code in sd.c looks a little different compared to other SD/MMC-Code 
+   (elm-chan, TI-Appnote, Holger Klabunde, Circuit-Cellar...it seems that all 
+   are a litte different) will kept the "working system" untouched.
+  move configuration options from AT91_spi to config-AT91.h
+
+
+---  
+  
+simple optimization possible for all interfaces which use 
+"polled spi" to use the time needed by the spi-hardware 
+to shift values in/out for something useful. 
+(based on an idea from Holger Klabunde)
+
+maybe for efsl "0.2.9.1" since the hardware-endpoints have
+to be extended by additional functions/makros and the general utility
+functions in sd.c have to be modified to use them.
+
+separate "char if_spiSend(char)" into something like
+// writes value (maybe also wait for "send possible"):
+void if_spi_out(uint8_t) 
+and 
+// waits for "value received"/"transfer-complete" and returns received
+uint8_t if_spi_in(void) 
+which should be makros or inline-functions
+
+// so an "old style" if_spiSend would look like this:
+euint8 if_spiSend(euint8 v)
+{
+	if_spi_out(v);
+	return if_spi_in();
+}
+
+
+# in a "read-block":
+
+sd_read_block(uint32_t addr, uint8_t *buf, uint16_t len)
+{
+	uint8_t b;
+	uint8_t *pbuf;
+	uint16_t i;
+	
+	[send command read block addr]
+	
+	pbuf = buf;
+	// 1st spi-frame (read first byte from card into temp.-var.)
+	if_spi_out(0xff);
+	b = if_spi_in();
+	if_spi_out(0xff); // shift out 0xff for the 2nd byte
+	for(i=0; i<(len-1); i++) {
+		*pbuf++ = b;         // store last byte in buffer while SPI module shifts in new data
+		b = if_spi_in();
+		if_spi_out(0xff); // "kick transfer" for next byte
+	} 
+	*pbuf = b; // store last byte
+	// the last if_spi_out kicked the transfer of CRC1
+	if_spi_in(); // wait for CRC1
+	if_spi_out(0xff); // push another 0xff to init CRC2 transfer
+	if_spi_in(); // wait for CRC2
+
+# in a "write block"
+
+sd_write_block(uint32_t addr, uint8_t* buf, uint16_t len)
+{
+	uint16_t i;
+	uint8_t b;
+	uint8_t  *pbuf, b;
+
+	[send command write block]
+ 
+	pbuf = buf;
+	
+	if_spi_out(0xfe);    
+	for(i=0; i<len; i++) {
+		b=*pbuf++;
+		if_spi_in(); // wait for end of prev. write 
+		if_spi_out(b);
+	}
+	if_spi_in(); // wait for end of prev. write 
+	if_spi_out(0xff); // crc1
+	if_spi_in();
+	if_spi_out(0xff); // crc2
+	if_spi_in();
+ 
+	[wait sd acceptance]
+	[wait sd no longer busy]
+}
+

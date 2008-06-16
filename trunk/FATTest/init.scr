@@ -1,0 +1,13 @@
+#init script 
+booter.setbaud 230400
+
+#set usb power to 500mA
+usb.setpower 500
+
+#load elf
+umon.waitforprompt
+umon{xmodem -dy
+umon.ydownload fattest
+umon<tfs ls
+umon<tfs -fE cp fattest fattest
+umon<fattest

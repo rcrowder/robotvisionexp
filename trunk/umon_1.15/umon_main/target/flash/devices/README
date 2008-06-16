@@ -1,0 +1,164 @@
+MICRO-MONITOR FLASH DRIVER DISCUSSION:
+
+This is the "second-generation" of flash drivers for uMON.  It is simply a
+re-organization of the older flash directory functionality.  Each .c/.h file
+set supports one device in one memory configuration.  The definition of
+"configuration" here has two parts:
+
+  * The number of devices in parallel to form one bank.
+	This covers the situation where several devices of the same type
+	are placed in parallel to provide a wider bus access.
+
+  * The width of the data bus per device.
+	This covers the devices that can be configured in multiple bus
+	widths, usually dependent on a single input pin on the device.
+
+
+This new model supports a more portable reuse of each of the files across
+platforms that may use the devices in slightly different ways.  For
+example, if one target uses the AM29F040 alone and another target uses the
+AM29F040 along with some other device, both targets would be able to use
+the same AM29F040 driver source file.  The target-specific code would deal
+with building up the multiple devices into one flash subsystem for the monitor
+and TFS.
+
+******************************************************************************
+
+The naming convention for the device files is as follows...
+
+  DEVICENAME_DBW_DIP
+
+  where DEVICENAME	is the device name (duh)
+        DBW			is the configured device data bus width (in bits)
+        DIP			is the number of devices in parallel (to form a bank)
+
+Many flash devices can be configured in x8 or x16 bus width mode,
+so for example, the Am29LV160D can have several different source
+files depending on its configuration in the target system...
+
+  am29lv160d_08x1.c	-> Am29LV160D in  8-bit mode, 1 device  in parallel
+  am29lv160d_08x2.c	-> Am29LV160D in  8-bit mode, 2 devices in parallel
+  am29lv160d_08x4.c	-> Am29LV160D in  8-bit mode, 4 devices in parallel
+  am29lv160d_16x1.c	-> Am29LV160D in 16-bit mode, 1 device  in parallel
+  am29lv160d_16x2.c	-> Am29LV160D in 16-bit mode, 2 devices in parallel
+
+Each device has a header file with the same name.
+
+******************************************************************************
+
+Regarding the source files...
+Each source file supports being used as either one of several devices
+on a target or as a single-stand-alone device on the target; hence,
+the file contains all the functions needed to support the device
+(both the relocatable and non-relocatable functions).
+
+Each .c/.h pair has three significant #defines that it uses to determine
+what to build...
+
+INCLUDE_FLASH:
+	If defined, then the flash stuff is built in; else it is omitted.
+
+SINGLE_FLASH_DEVICE:
+	If defined, then the device that the driver supports is the only
+	flash device in the system that is to be visible by the monitor.
+	If not defined, then the FlashInit() functionality must be part
+	of the target-specific code.
+
+FLASH_COPY_TO_RAM:
+	If defined, then the assumtion is that the monitor is running out of
+	the same device that the flash driver is built for.  This means that
+	the code that operates on the flash must be fetched from some other
+	device (i.e. RAM) during the flash operation.
+	Note that this assumption is not always valid.  Some devices do
+	support simultaneous fetch/operation but we do not deal with that
+	here.  To keep it simple, these drivers just assume that you can't
+	execute out of the same device you are operating on.  If you want to
+	take advantage of that, then go for it.
+
+
+******************************************************************************
+
+EACH .c/.h PAIR HAS TWO SETS OF FUNCTIONS:  RELOCATABLE AND NON-RELOCATABLE.
+
+RELOCATABLE...
+The functions that may need to be relocatable are those that directly operate
+on the flash device.  During these operations, in most cases, the flash is in
+a state that makes fetching from the device illegal.  This means that the
+functions must be executed out of some other memory space.  If the monitor
+is built in such a way that it will execute directly out of the flash device,
+then it is necessary to relocate these functions to RAM.  If the monitor
+is built in such a way that it is entirely copied to RAM and runtime monitor
+execution is out of RAM, then these flash operation functions obiouvsly don't
+have to be relocated.  The need for relocation depends on the target system
+configuration; however, the intent of these files is to support the
+capability.  The FLASH_COPY_TO_RAM #define determines whether or not these
+functions are relocated to ram or not.
+
+NON-RELOCATABLE...
+The functions that will never need relocation are those that are included
+if SINGLE_FLASH_DEVICE is defined.  If this definition is set (in the
+target-specific config.h file), then the assumption is that the device
+the driver supports is the only flash device visible to the monitor.  If
+it is not defined, then the target-specific code must include some superset
+of that functionality.
+
+******************************************************************************
+
+OVERVIEW OF EACH OF THE FUNCTIONS IN A .c/.h DRIVER PAIR:
+
+These driver functions assume that an operation is performed on a bank.
+A bank may be 1, 2 or 4 devices in parallel depending on the hardware
+configuration.  You can think of a bank as being the block of devices that
+are enabled in parallel by one chip select. 
+
+Each of the relocatable functions has a matching "End" function.  This "End"
+function MUST be placed immediately after the real function.  Its purpose is
+to provide a convenient mechanism for calculating the size of the flash
+operation function, and it assumes that the linker will put the functions
+in memory space in the same order as they are listed in the file.  
+
+DEVICENAME_erase():
+	This function takes as input, a pointer to a flash bank and a sector
+	number.  The specified sector number is erased.  If the sector number
+	is -1, then all, non-protected sectors are erased.
+
+DEVICENAME_write():
+	This function copies the specified number of bytes from source address
+	to destination.  The destination address is assumed to be flash space.
+	This function must support the possibility of the write request not
+	being naturally aligned with the data-bus width of the bank.
+	
+DEVICENAME_ewrite():
+	This function is basically a concatenation of the write and erase
+	functions above.  It is needed for the cases where the monitor is 
+	running out of the same device that is to be operated on, and
+	supports the ability to re-write a new monitor.  To install a new
+	monitor image in place of one that is currently running, we must
+	have the ability to erase the monitor sectors and reprogram new
+	content into those sectors all in one step.  This is because after
+	we erase the boot sectors, there is no image to fetch from; hence,
+	the erase and write must be in the same function, and that function
+	cannot reside in the device that is being updated.
+
+DEVICENAME_type():
+	This function simply returns the manufacturer and device IDs of
+	the flash part.  This is a handy function to have just to make a
+	quick verification that the flash can be operated on; however, it is
+	actually only needed by the driver if the system must deal with the
+	possibility of different installed devices (within a family) on-board.
+
+DEVICENAME_lock():
+	This function is used by the core uMon code to initially determine if
+	the underlying device is lockable.  Once that is determined, there
+	are three main uses of lock: lock a sector, unlock a sector and query
+	the sector for its lock status.  Note that if the flash device does
+	not support a firmware-accessible lock mechanism, then the FLASH_LOCKABLE
+	operation should return 0.
+
+FlashInit():
+	This is the function called by main() in the monitor to initialize
+	the flash subsystem.  It basically establishes the structures within
+	the FlashBank[] array.  In most cases a single flash bank will be
+	on-board, so the default FlashInit() function (pulled in by the
+	SINGLE_FLASH_DEVICE definition) will be used.
+	

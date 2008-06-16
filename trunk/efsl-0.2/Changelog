@@ -1,0 +1,51 @@
+Changelog for EFSL-stable
+=========================
+
+Version 0.2.9
+-------------
+	* Added AT91SAM7 port (Martin Thomas)
+	* Fixed bug 1495429 (thanks Bertrik)
+	* Fixed problem w/ apppending to files
+
+Version 0.2.8
+-------------
+	* Fixed problem with FAT12
+
+Version 0.2.7
+-------------
+	* Fixed ioman memory leak
+	* Fixed bug in fs_findFile (fopen problems)
+	* Added NIOS2 endpoint for 4 bit sd mode (Marcio Troccoli)
+
+Version 0.2.6
+-------------
+	* Changed license to regular GPL with eCos exception clause
+
+Version 0.2.5
+-------------
+	* Fixed SPI bug in ATMega port (thanks to Alvaro Aguirre)
+	* Added NIOS_2 endpoint (thanks to Marcio Troccoli)
+	* Added ARM-7 endpoint (thanks to Martin Thomas)
+	* Added Changelog for 0.2.3 & 0.2.4
+	* Corrected typo in release-script, so avr examples are added
+
+	
+Version 0.2.4
+-------------
+	* The speed improvements made in 0.2.3 were lost 
+	  (must have forgot to CVS update).
+
+	  
+Version 0.2.3
+-------------
+	* Added crude support for free space calculation
+
+	
+Version 0.2.2
+-------------
+	* Created a changelog.
+	* Corrected some typo's in manual.
+	* Fixed debugging for AVR (calculation of UBRR was not always correct).
+	* Created config option to choose UART-channel used for debugging.
+	* Updated documentation on new debug configuration.
+

@@ -1,0 +1,7 @@
+set ADDR 0xd490
+set SNUM 0
+# NEXT:
+pm -4 $ADDR $SNUM
+set -i SNUM
+set -ix 20 ADDR
+if $SNUM lt 36 goto NEXT

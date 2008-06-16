@@ -1,0 +1,17 @@
+# I pulled down the latest (as of this writing) version of zlib.
+# I was suspicious that the older zlib was doing something wrong (based on
+# feedback from a user).  This update didn't change anything, so now I'm
+# suspicious that there was pilot error on the part of the user.
+# Anyway, since I went through the pain of integrating this version into
+# uMon it is now in CVS and available for others to use by simply
+# changing the ZLIBDIR entry in make/common.make to zlib-1.2.3.
+# 
+# My notes during the update:
+#
+# - Started with a subset of the zlib files (those needed for decompression
+#   only).
+# - Changed crc32.c and crc32.h to zcrc32.c/zcrc32.h.  Made the same changes
+#   in the code (added #define crc32 zcrc32 to zlib.h).
+# - Pulled out all the code that is omitted as a result of -DNO_GZCOMPRESS.
+# - This library only supports decompression; hence, no need for the compress
+#   stuff.

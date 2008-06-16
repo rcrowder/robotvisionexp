@@ -1,0 +1,13 @@
+This is an example of a VERY-VERY cut-back version of uMon (called
+uuMon, or MicroMicroMonitor) for use in a ridiculously memory-limited
+system as a serial-port only bootloader.
+
+It fits in under 16K total space (text/data/bss/stack) and provides
+xmodem data transfer, DM, PM, MT and CALL commands.
+
+This version is built to run on the CSB637 and assumes that
+basic IO is already initialized.
+
+The target-specific portions of this build are in cpuio.c and crt0_arm.S.
+All other portions of the code should be independent of the target.
+
