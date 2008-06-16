@@ -1,0 +1,45 @@
+#Creating EFSL distributions
+echo "Creating efsl-$1..."
+mkdir efsl-$1
+mkdir efsl-$1/conf
+mkdir efsl-$1/docs
+mkdir efsl-$1/inc
+mkdir efsl-$1/src
+mkdir efsl-$1/linuxutils
+mkdir efsl-$1/linuxutils/include
+mkdir efsl-$1/linuxutils/include/interfaces
+mkdir efsl-$1/linuxutils/lib
+mkdir efsl-$1/testfiles
+mkdir efsl-$1/examples
+mkdir efsl-$1/examples/linux
+mkdir efsl-$1/examples/avr
+cp Makefile-* efsl-$1
+make -f Makefile-LINUX clean
+make -f Makefile-AVR clean
+
+echo "Creating a pdf of the manual..."
+cd docs; make all > /dev/null ; cd ..
+cp docs/manual.pdf efsl-$1/docs/
+cp docs/manual.pdf ./manual-$1.pdf
+cd docs; make clean > /dev/null ; cd ..
+
+cp conf/* efsl-$1/conf
+rm efsl-$1/conf/config.h
+
+cp -r src/* efsl-$1/src
+cp -r inc/* efsl-$1/inc
+
+cp -r docs/* efsl-$1/docs
+
+cp linuxutils/*.c linuxutils/Makefile efsl-$1/linuxutils
+cp testfiles/doregtest efsl-$1/testfiles/doregtest
+cp testfiles/doregtest2 efsl-$1/testfiles/doregtest2
+
+cp examples/linux/*.c examples/linux/*.h efsl-$1/examples/linux/
+cp examples/avr/*.c examples/avr/*.h efsl-$1/examples/avr/
+cp -r examples/lpc2138_ssp* efsl-$1/examples/
+
+tar -cvf efsl-$1.tar efsl-$1
+bzip2 efsl-$1.tar
+rm -rf efsl-$1
+echo "Done"

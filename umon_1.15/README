@@ -1,0 +1,20 @@
+Welcome to MicroMonitor!
+
+This is the top-level of the MicroMonitor CVS.
+
+There are three main directories:
+umon_main:
+  This is the common code reusable on various targets as the core
+  of MicroMonitor's functionality.
+umon_ports:
+  This directory contains the public ports of MicroMonitor.  Each
+  subdirectory contains the makefile and target-specific code for
+  one uMon port.
+umon_apps:
+  This code provides a few different application examples for use
+  after the bootmonitor is built and running on your target.  The
+  best place to go there is umon_apps/demo.  This directory contains
+  the source and makefile that support building a basic application
+  for any target supported by MicroMonitor.  
+
+To get started, refer to umon_main/README.

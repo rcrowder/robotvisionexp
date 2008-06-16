@@ -1,0 +1,34 @@
+# efsl library makefile for LPC2000 (this if for MCI)
+# by Martin Thomas
+# (based on the efsl avr- and the WinARM-template makefiles)
+
+MCU   = arm7tdmi-s
+THUMB = -mthumb -mthumb-interwork
+
+COPT= -mcpu=$(MCU) $(THUMB) -gdwarf-2 -Wall -Os 
+# You may compile this library with the options
+# -ffunctions-sections and -fdata-sections
+# to enabled gcc 4 "unused code removal" when linking the 
+# libefsl.a with an application with linker-option 
+# -gc-sections. See the gcc and bintuils documentation
+COPT+= -ffunction-sections -fdata-sections
+INCLUDEDIRS=-Iinc -Iconf
+CFLAGS=$(COPT) $(INCLUDEDIRS)
+CC=arm-elf-gcc
+AR=arm-elf-ar
+OBJCOPY=arm-elf-objcopy
+OBJ=src/efs.o src/plibc.o src/disc.o src/partition.o src/time.o src/fs.o src/fat.o src/file.o src/dir.o src/mkfs.o src/debug.o src/ioman.o src/ui.o src/extract.o 
+OBJ+=src/ls.o
+OBJ+=src/interfaces/efsl_dbg_printf_arm.o
+### OBJ+=src/interfaces/sd.o
+### OBJ+=src/interfaces/lpc2000_sd.o 
+OBJ+=src/interfaces/lpc2000_mci.o 
+
+all: lib
+
+lib: $(OBJ)
+	$(AR) rcs libefsl.a $(OBJ)
+	
+clean :
+	rm -f $(OBJ) libefsl.a
+

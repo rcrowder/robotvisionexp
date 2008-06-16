@@ -1,0 +1,47 @@
+# 
+# The following command wills be executed on
+# reset (because of run_and_init in the config-file)
+# - wait for target halt
+# - erase memory
+# - flash content of file main.bin into target-memory
+# - shutdown openocd
+#
+#  PRELIMINARY - first test for LPC2378
+#
+#
+# Martin Thomas 
+# http://www.siwawi.arubi.uni-kl.de/avr_projects/arm_projects
+# based on information from Dominic Rath 
+#
+
+halt
+sleep 20
+wait_halt 2
+
+# ignore my comments - setup works without the following.
+# disable PLL and switch to IRC (4 MHz nom.)
+# hmm - should not be needed since IRC is default source after Reset...
+# any interaction with the ISP startup??
+# doesn't work anyway - something missing
+# TODO: read manual.
+#mww 0xE01FC080 0x00000000   # PLLCON  = 0
+#mww 0xE01FC08C 0x000000AA   # PLLFEED = 0xAA
+#mww 0xE01FC08C 0x00000055   # PLLFEED = 0x55
+#mww 0xE01FC040 0x00000001   # MEMMAP  = 0x01
+#sleep 10
+
+arm7_9 dcc_downloads enable
+
+flash probe 0
+
+# erase complete flash:
+#flash erase 0 0 26
+# just erase the 10 first sectors of bank 0
+flash erase 0 0 10
+
+flash write 0 main.bin 0x0
+
+sleep 50
+reset run
+sleep 50
+shutdown

@@ -1,0 +1,20 @@
+COPT=-g3 -Os -Wall -mcpu=arm9tdmi -ffunction-sections -fdata-sections
+INCLUDEDIRS=-Iinc -Iconf -Iinc/interfaces
+CFLAGS=$(COPT) $(INCLUDEDIRS)
+
+CC=arm-elf-gcc
+AR=arm-elf-ar
+OBJCOPY=arm-elf-objcopy
+
+OBJ=src/efs.o src/plibc.o src/disc.o src/partition.o src/time.o src/fs.o src/fat.o src/file.o src/dir.o src/mkfs.o src/debug.o src/ioman.o src/ui.o src/extract.o
+OBJ+=src/interfaces/vcmx212.o
+OBJ+=src/interfaces/vcmx212_GPIO.o
+OBJ+=src/interfaces/vcmx212_SDHC.o
+
+all: lib
+
+lib: $(OBJ)
+	$(AR) rcs libefsl.a $(OBJ)
+	
+clean :
+	rm -f $(OBJ) libefsl.a

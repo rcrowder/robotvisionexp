@@ -1,0 +1,24 @@
+aout.o: aout.c aout.h utils.h ../comsrc/version.h
+backtrace.o: backtrace.c utils.h
+bin2array.o: bin2array.c utils.h
+bin2srec.o: bin2srec.c utils.h
+bswap.o: bswap.c utils.h
+chopline.o: chopline.c
+coff.o: coff.c coff.h ../zlib/zlib.h ../zlib/zconf.h utils.h \
+  ../comsrc/version.h
+d2u.o: d2u.c utils.h ../comsrc/version.h
+defdate.o: defdate.c utils.h
+elf.o: elf.c elf.h utils.h ../zlib/zlib.h ../zlib/zconf.h
+f2mem.o: f2mem.c utils.h
+fcrc.o: fcrc.c utils.h ../comsrc/crc32.h
+make2flist.o: make2flist.c utils.h
+monsym.o: monsym.c utils.h
+mkupdate.o: mkupdate.c utils.h ../comsrc/crc32.h ../ttftp/ttftp.h
+mkbmp.o: mkbmp.c
+mktfsimg.o: mktfsimg.c tfs.h tfsprivate.h utils.h
+fsize.o: fsize.c utils.h ../comsrc/crc32.h
+title.o: title.c
+tfs.o: tfs.c utils.h tfs.h tfsprivate.h
+what.o: what.c utils.h
+vsub.o: vsub.c utils.h ../comsrc/version.h
+u2d.o: u2d.c utils.h ../comsrc/version.h
