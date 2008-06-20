@@ -11,7 +11,7 @@ CC			= $(TOOL_PREFIX)-gcc
 STRIP		= $(TOOL_PREFIX)-strip
 OBJCOPY		= $(TOOL_PREFIX)-objcopy
 OBJDUMP		= $(TOOL_PREFIX)-objdump
-LIBGCC		= `$(CC) --print-libgcc-file-name`
+LIBGCC		= "`$(CC) --print-libgcc-file-name`"
 LIBDIR		= $(LIBGCC:/libgcc.a=)
 
 EFSL_DIR	= ../efsl-0.2
@@ -19,7 +19,7 @@ EFSL_INC	= -I$(EFSL_DIR)/inc -I$(EFSL_DIR)/conf
 EFSL_LIBDIR	= $(EFSL_DIR)
 EFSL_LIBS	= -lefsl
 
-LIBCDIR		= /cygdrive/d/gnuarm/arm-elf/lib
+LIBCDIR		= "C:\Program Files\GNUARM\arm-elf\lib"
 LDSCRIPT	= ldscript
 
 TOOL_PREFIX	:= arm-elf
