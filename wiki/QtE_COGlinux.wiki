@@ -63,6 +63,7 @@ http://groups.google.co.uk/group/virtualcogs/browse_thread/thread/a45cbad09f73c8
 
 Qt Open Source Edition for C++ Developers: Embedded Linux Download (http://trolltech.com/downloads/opensource)
 
+  * TODO: Create new mkspec for gnueabi-linux-arm-g++
   * TODO: Sort out ./configure options
   {{{
   export QTEDIR=$PWD
@@ -72,7 +73,7 @@ Qt Open Source Edition for C++ Developers: Embedded Linux Download (http://troll
     -qt-zlib -qt-gif -qt-libtiff -qt-libpng -qt-libmng -qt-libjpeg \
     -nomake demos \
     -pch \
-    -xplatform qws/linux-arm-g++ \
+    -xplatform qws/gnueabi-linux-arm-g++ \
     -embedded arm \
     -qconfig medium \
     -qt-mouse-tslib \
