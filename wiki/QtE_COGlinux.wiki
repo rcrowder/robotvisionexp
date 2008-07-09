@@ -16,7 +16,10 @@ Packages
   * autoconf
   * automake
   * libtool
-  * SVN & CVS
+  * SVN(Subversion) & CVS
+{{{
+sudo apt-get install build-essential autoconf automake libtool subversion cvs
+}}}
 
 Libraries
   * CP210x USB to UART Bridge VCP Drivers (http://www.silabs.com/tgwWebApp/public/web_content/products/Microcontrollers/USB/en/mcu_vcp.htm)
