@@ -64,6 +64,10 @@ http://groups.google.co.uk/group/virtualcogs/browse_thread/thread/a45cbad09f73c8
 Qt Open Source Edition for C++ Developers: Embedded Linux Download (http://trolltech.com/downloads/opensource)
 
   * TODO: Sort out ./configure options
+  {{{
+  export QTEDIR=$PWD
+  ./configure -prefix /mnt/sd -no-largefile -no-svg -no-webkit -qt-zlib -qt-gif -qt-libtiff -qt-libpng -qt-libmng -qt-libjpeg -nomake demos -pch -xplatform qws/linux-arm-g++ -embedded arm -qconfig medium -qt-mouse-tslib -no-qt3support -L/mnt/sd/lib/ -I/mnt/usb/include/
+  }}}
 
 == OpenOCD ==
 
