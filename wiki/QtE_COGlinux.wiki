@@ -15,13 +15,14 @@ Packages
   * build-essential
   * autoconf
   * automake
+  * CP210x USB to UART Bridge VCP Drivers (http://www.silabs.com/tgwWebApp/public/web_content/products/Microcontrollers/USB/en/mcu_vcp.htm)
 
 mkdir Dev
 cd Dev
 
 == GNU ARM Toolchain ==
 
-http://www.codesourcery.com/gnu_toolchains/arm - Sourcery G++ Lite 2008q1-126 for ARM GNU/Linux
+Sourcery G++ Lite 2008q1-126 for ARM GNU/Linux (http://www.codesourcery.com/gnu_toolchains/arm)
 
 TODO: Kernel version?? and recompile with this toolchain??
 
@@ -36,13 +37,12 @@ TODO: Sort out shared libraries
 
 == Qt Install ==
 
-http://trolltech.com/downloads/opensource - Qt Open Source Edition for C++ Developers: Embedded Linux Download
+Qt Open Source Edition for C++ Developers: Embedded Linux Download (http://trolltech.com/downloads/opensource)
 
 TODO: Sort out ./configure options
 
 == OpenOCD ==
 
-TODO: Is Silabs driver required?
 TODO: Does the USB codes match the existing OpenOCD VC config file?
 TODO: GDB Server??
 
