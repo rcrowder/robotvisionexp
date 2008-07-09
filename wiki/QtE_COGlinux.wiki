@@ -20,7 +20,7 @@ Packages
 Libraries
   * CP210x USB to UART Bridge VCP Drivers (http://www.silabs.com/tgwWebApp/public/web_content/products/Microcontrollers/USB/en/mcu_vcp.htm)
   * Tslib (http://tslib.berlios.de/)
-  * FTDI FT2232
+  * FTDI FT2232 (http://www.intra2net.com/de/produkte/opensource/ftdi/)
 
 {{{
 mkdir Dev
@@ -42,6 +42,9 @@ cd ../..
 
 == Touchscreen driver ==
 
+http://www.jespersaur.com/drupal/node/30
+http://groups.google.co.uk/group/virtualcogs/browse_thread/thread/58528d8bf9f84e8d/51bffac0f45c68cb?lnk=gst&q=tslib#51bffac0f45c68cb
+http://groups.google.co.uk/group/virtualcogs/browse_thread/thread/a45cbad09f73c852/4cc767cd11663d12?lnk=gst&q=DirectFB#4cc767cd11663d12
 TODO: Sort out shared libraries setup in COGlinux
 
 == Qt Install ==
@@ -53,7 +56,8 @@ TODO: Sort out ./configure options
 == OpenOCD ==
 
 http://openfacts.berlios.de/index-en.phtml?title=Open_On-Chip_Debugger
-TODO: Which FTDI FT2232 lib?
+http://buffalo.nas-central.org/index.php/JTAG_&_OpenOCD_for_LS-Pro
+http://forum.sparkfun.com/viewtopic.php?p=47245&highlight=#47245
 TODO: Does the USB codes match the existing OpenOCD VC config file?
 TODO: GDB Server??
 
