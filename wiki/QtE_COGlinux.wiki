@@ -4,7 +4,7 @@
 
 *!!!!WORK - IN - PROGRESS!!!!*
 
-*!!Use at your owns risk!!*
+_*!!Use at your owns risk!!*_
 
 
 = Details =
@@ -55,7 +55,7 @@ http://groups.google.co.uk/group/virtualcogs/browse_thread/thread/a45cbad09f73c8
   ./configure --host=arm-none-linux-gnueabi --prefix=/mnt/usb???
   make
   }}}
-  # Transfer to COGlinux filesystem
+  # Transfer to COGlinux file system
   # Test the tools, e.g. ts_calibrate
   # Copy over and soft-link missing shared libraries (libc, libdl, etc)
 
@@ -66,7 +66,18 @@ Qt Open Source Edition for C++ Developers: Embedded Linux Download (http://troll
   * TODO: Sort out ./configure options
   {{{
   export QTEDIR=$PWD
-  ./configure -prefix /mnt/sd -no-largefile -no-svg -no-webkit -qt-zlib -qt-gif -qt-libtiff -qt-libpng -qt-libmng -qt-libjpeg -nomake demos -pch -xplatform qws/linux-arm-g++ -embedded arm -qconfig medium -qt-mouse-tslib -no-qt3support -L/mnt/sd/lib/ -I/mnt/usb/include/
+  ./configure \
+    -prefix /mnt/sd \
+    -no-largefile -no-qvfb -no-svg -no-webkit \
+    -qt-zlib -qt-gif -qt-libtiff -qt-libpng -qt-libmng -qt-libjpeg \
+    -nomake demos \
+    -pch \
+    -xplatform qws/linux-arm-g++ \
+    -embedded arm \
+    -qconfig medium \
+    -qt-mouse-tslib \
+    -no-qt3support \
+    -L/mnt/sd/lib/ -I/mnt/usb/include/\
   }}}
 
 == OpenOCD ==
