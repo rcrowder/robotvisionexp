@@ -21,23 +21,21 @@ Libraries
   * CP210x USB to UART Bridge VCP Drivers (http://www.silabs.com/tgwWebApp/public/web_content/products/Microcontrollers/USB/en/mcu_vcp.htm)
   * Tslib (http://tslib.berlios.de/)
   * FTDI FT2232 (http://www.intra2net.com/de/produkte/opensource/ftdi/)
-
 {{{
+cd ~
 mkdir Dev
-cd Dev
 }}}
 
 == GNU ARM Toolchain ==
 
 Sourcery G++ Lite 2008q1-126 for ARM GNU/Linux (http://www.codesourcery.com/gnu_toolchains/arm)
 
-TODO: Kernel version?? and recompile with this toolchain??
-
+  * TODO: Kernel version?? and recompile with this toolchain??
 {{{
+cd ~/Dev
 bzcat arm-2008q1-126-arm-none-linux-gnueabi-i686-pc-linux-gnu.tar.bz2 | tar -xv
 cd arm-2008q1/bin
 export PATH=${PWD}:${PATH}
-cd ../..
 }}}
 
 == Touchscreen driver ==
@@ -45,23 +43,38 @@ cd ../..
 http://www.jespersaur.com/drupal/node/30
 http://groups.google.co.uk/group/virtualcogs/browse_thread/thread/58528d8bf9f84e8d/51bffac0f45c68cb?lnk=gst&q=tslib#51bffac0f45c68cb
 http://groups.google.co.uk/group/virtualcogs/browse_thread/thread/a45cbad09f73c852/4cc767cd11663d12?lnk=gst&q=DirectFB#4cc767cd11663d12
-TODO: Sort out shared libraries setup in COGlinux
+  * Edit config.h to comment out rpl_malloc
+  * TODO: Sort out shared libraries setup in COGlinux
+  # Make the shared library and tools
+  {{{
+  cd ~/Dev
+  svn co svn://svn.berlios.de/tslib/trunk/tslib tslib
+  cd tslib
+  ./autogen.sh
+  ./configure --prefix=/mnt/usb??? --host=arm-linux???
+  make
+  }}}
+  # Upload to linux filesystem
+  # Test the tools, e.g. ts_calibrate
+  # Copy over and soft-link missing shared libraries (libc, libdl, etc)
 
 == Qt Install ==
 
 Qt Open Source Edition for C++ Developers: Embedded Linux Download (http://trolltech.com/downloads/opensource)
 
-TODO: Sort out ./configure options
+  * TODO: Sort out ./configure options
 
 == OpenOCD ==
 
 http://openfacts.berlios.de/index-en.phtml?title=Open_On-Chip_Debugger
 http://buffalo.nas-central.org/index.php/JTAG_&_OpenOCD_for_LS-Pro
 http://forum.sparkfun.com/viewtopic.php?p=47245&highlight=#47245
-TODO: Does the USB codes match the existing OpenOCD VC config file?
-TODO: GDB Server??
+
+  * TODO: Does the USB codes match the existing OpenOCD VC config file?
+  * TODO: GDB Server??
 
 == Eclipse ==
 
-TODO: Qt integration
-TODO: OpenOCD/GDB integration
+Qt integration (http://trolltech.com/developer/downloads/qt/eclipse-integration-download)
+
+  * TODO: OpenOCD/GDB integration
