@@ -15,6 +15,7 @@ Packages
   * build-essential
   * autoconf
   * automake
+  * libtool
   * SVN & CVS
 
 Libraries
