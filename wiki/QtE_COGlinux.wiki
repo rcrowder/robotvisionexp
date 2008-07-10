@@ -69,14 +69,14 @@ http://groups.google.co.uk/group/virtualcogs/browse_thread/thread/a45cbad09f73c8
   * Edit config.h to comment out rpl_malloc
   * TODO: Sort out shared libraries setup in COGlinux
   # Make the shared library and tools
-  {{{
-  cd ~/Dev
-  svn co svn://svn.berlios.de/tslib/trunk/tslib tslib
-  cd tslib
-  ./autogen.sh
-  ./configure --host=arm-none-linux-gnueabi --prefix=/mnt/usb???
-  make
-  }}}
+{{{
+cd ~/Dev
+svn co svn://svn.berlios.de/tslib/trunk/tslib tslib
+cd tslib
+./autogen.sh
+./configure --host=arm-none-linux-gnueabi --prefix=/mnt/usb???
+make
+}}}
   # Transfer to COGlinux file system
   # Test the tools, e.g. ts_calibrate
   # Copy over and soft-link missing shared libraries (libc, libdl, etc)
@@ -87,21 +87,21 @@ Qt Open Source Edition for C++ Developers: Embedded Linux Download (http://troll
 
   * TODO: Create new mkspec for gnueabi-linux-arm-g++
   * TODO: Sort out ./configure options
-  {{{
-  export QTEDIR=$PWD
-  ./configure \
-    -prefix /mnt/sd \
-    -no-largefile -no-qvfb -no-svg -no-webkit \
-    -qt-zlib -qt-gif -qt-libtiff -qt-libpng -qt-libmng -qt-libjpeg \
-    -nomake demos \
-    -pch \
-    -xplatform qws/gnueabi-linux-arm-g++ \
-    -embedded arm \
-    -qconfig medium \
-    -qt-mouse-tslib \
-    -no-qt3support \
-    -L/mnt/sd/lib/ -I/mnt/usb/include/\
-  }}}
+{{{
+export QTEDIR=$PWD
+./configure \
+  -prefix /mnt/sd \
+  -no-largefile -no-qvfb -no-svg -no-webkit \
+  -qt-zlib -qt-gif -qt-libtiff -qt-libpng -qt-libmng -qt-libjpeg \
+  -nomake demos \
+  -pch \
+  -xplatform qws/gnueabi-linux-arm-g++ \
+  -embedded arm \
+  -qconfig medium \
+  -qt-mouse-tslib \
+  -no-qt3support \
+  -L/mnt/sd/lib/ -I/mnt/usb/include/\
+}}}
 
 == OpenOCD ==
 
