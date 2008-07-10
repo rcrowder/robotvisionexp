@@ -9,13 +9,7 @@ _*!!Use at your owns risk!!*_
 
 = Details =
 
-== Ubuntu setup ==
-
-{{{
-cd ~
-mkdir dev
-cd dev
-}}}
+== Ubuntu Setup ==
 
 Packages
   * build-essential
@@ -26,41 +20,12 @@ Packages
   * RPM & alien
 
 {{{
-sudo apt-get install build-essential autoconf automake libtool subversion cvs rpm alien
-}}}
-
-Libraries
-  * CP210x USB to UART Bridge VCP Drivers (http://www.silabs.com/tgwWebApp/public/web_content/products/Microcontrollers/USB/en/mcu_vcp.htm)
-
-{{{
-cd ~/dev
+cd ~
+mkdir dev
+cd dev
+mkdir libs
 mkdir drivers
-cd drivers
-gzip -cd cp210x-3.0.0.tar.gz | tar xvf -
-cd cp210x-3.0.0
-./makerpm
-cd /var/tmp/silabs/rpmbuild/RPMS/i386
-sudo alien -iv cp210x-3.0.0-001.i386.rpm
-(plug USB cable into VCMX212 *THEN* into PC)
-dmesg | grep USB (to check to see if the install has worked)
-}}}
-
-  * Tslib (http://tslib.berlios.de/)
-
-{{{
-...
-}}}
-
-  * FTDI FT2232 (http://www.intra2net.com/de/produkte/opensource/ftdi/)
-
-{{{
-cd ~/dev
-cd libs
-gzip -cd libftdi-0.13.tar.gz | tar xvf -
-cd libftdi-0.13
-./configure
-make
-make install
+sudo apt-get install build-essential autoconf automake libtool subversion cvs rpm alien
 }}}
 
 == GNU ARM Toolchain ==
@@ -70,13 +35,42 @@ Sourcery G++ Lite 2008q1-126 for ARM GNU/Linux (http://www.codesourcery.com/gnu_
   * TODO: Kernel version?? and recompile with this toolchain??
 
 {{{
-cd ~/Dev
+cd ~/dev
 bzcat arm-2008q1-126-arm-none-linux-gnueabi-i686-pc-linux-gnu.tar.bz2 | tar -xv
 cd arm-2008q1/bin
 export PATH=${PWD}:${PATH}
 }}}
 
-== Touchscreen driver ==
+== Libraries ==
+
+  * CP210x USB to UART Bridge VCP Drivers (http://www.silabs.com/tgwWebApp/public/web_content/products/Microcontrollers/USB/en/mcu_vcp.htm)
+
+{{{
+cd ~/dev/drivers
+gzip -cd cp210x-3.0.0.tar.gz | tar xvf -
+cd cp210x-3.0.0
+./makerpm
+cd /var/tmp/silabs/rpmbuild/RPMS/i386
+sudo alien -iv cp210x-3.0.0-001.i386.rpm
+(plug USB cable into VCMX212 *THEN* into PC)
+dmesg | grep USB (to check to see if the install has worked)
+}}}
+
+  * FTDI FT2232 (http://www.intra2net.com/de/produkte/opensource/ftdi/)
+
+{{{
+cd ~/dev/libs
+gzip -cd libftdi-0.13.tar.gz | tar xvf -
+cd libftdi-0.13
+./configure
+make
+make install
+}}}
+
+  * Tslib (See next section 'Touch Screen Driver')
+
+
+== Touch Screen Driver ==
 
 http://www.jespersaur.com/drupal/node/30
 http://groups.google.co.uk/group/virtualcogs/browse_thread/thread/58528d8bf9f84e8d/51bffac0f45c68cb?lnk=gst&q=tslib#51bffac0f45c68cb
@@ -85,7 +79,7 @@ http://groups.google.co.uk/group/virtualcogs/browse_thread/thread/a45cbad09f73c8
   * TODO: Sort out shared libraries setup in COGlinux
   # Make the shared library and tools
 {{{
-cd ~/Dev
+cd ~/dev/libs
 svn co svn://svn.berlios.de/tslib/trunk/tslib tslib
 cd tslib
 ./autogen.sh
@@ -103,6 +97,9 @@ Qt Open Source Edition for C++ Developers: Embedded Linux Download (http://troll
   * TODO: Create new mkspec for gnueabi-linux-arm-g++
   * TODO: Sort out ./configure options
 {{{
+cd ~/dev/QtE
+gzip -cd qt-embedded-linux-opensource-src-4.4.0.tar.gz | tar xvf -
+cd qt-embedded-linux-opensource-src-4.4.0
 export QTEDIR=$PWD
 ./configure \
   -prefix /mnt/sd \
