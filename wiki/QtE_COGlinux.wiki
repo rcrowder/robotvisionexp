@@ -24,23 +24,27 @@ Packages
   * libtool
   * SVN(Subversion) & CVS
   * RPM & alien
+
 {{{
 sudo apt-get install build-essential autoconf automake libtool subversion cvs rpm alien
 }}}
 
 Libraries
   * CP210x USB to UART Bridge VCP Drivers (http://www.silabs.com/tgwWebApp/public/web_content/products/Microcontrollers/USB/en/mcu_vcp.htm)
-  {{{
-  mkdir drivers
-  cd drivers
-  gzip -cd cp210x-3.0.0.tar.gz | tar xvf -
-  cd cp210x-3.0.0
-  ./makerpm
-  cd /var/tmp/silabs/rpmbuild/RPMS/i386
-  sudo alien -iv cp210x-3.0.0-001.i386.rpm
-  (plug USB cable into VCMX212 *THEN* into PC)
-  dmesg | grep USB (to check to see if the install has worked)
-  }}}
+
+{{{
+cd ~/dev
+mkdir drivers
+cd drivers
+gzip -cd cp210x-3.0.0.tar.gz | tar xvf -
+cd cp210x-3.0.0
+./makerpm
+cd /var/tmp/silabs/rpmbuild/RPMS/i386
+sudo alien -iv cp210x-3.0.0-001.i386.rpm
+(plug USB cable into VCMX212 *THEN* into PC)
+dmesg | grep USB (to check to see if the install has worked)
+}}}
+
   * Tslib (http://tslib.berlios.de/)
   * FTDI FT2232 (http://www.intra2net.com/de/produkte/opensource/ftdi/)
 
@@ -49,6 +53,7 @@ Libraries
 Sourcery G++ Lite 2008q1-126 for ARM GNU/Linux (http://www.codesourcery.com/gnu_toolchains/arm)
 
   * TODO: Kernel version?? and recompile with this toolchain??
+
 {{{
 cd ~/Dev
 bzcat arm-2008q1-126-arm-none-linux-gnueabi-i686-pc-linux-gnu.tar.bz2 | tar -xv
