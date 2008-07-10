@@ -78,16 +78,14 @@ http://groups.google.co.uk/group/virtualcogs/browse_thread/thread/a45cbad09f73c8
   * Edit config.h to comment out rpl_malloc
   * TODO: Sort out shared libraries setup in COGlinux
   # Make the shared library and tools
-
-{{{
-cd ~/dev/libs
-svn co svn://svn.berlios.de/tslib/trunk/tslib tslib
-cd tslib
-./autogen.sh
-./configure --host=arm-none-linux-gnueabi --prefix=/mnt/usb???
-make
-}}}
-
+  {{{
+  cd ~/dev/libs
+  svn co svn://svn.berlios.de/tslib/trunk/tslib tslib
+  cd tslib
+  ./autogen.sh
+  ./configure --host=arm-none-linux-gnueabi --prefix=/mnt/sd???
+  make
+  }}}
   # Transfer to COGlinux file system
   # Test the tools, e.g. ts_calibrate
   # Copy over and soft-link missing shared libraries (libc, libdl, etc)
@@ -114,7 +112,9 @@ export QTEDIR=$PWD
   -qconfig medium \
   -qt-mouse-tslib \
   -no-qt3support \
-  -L/mnt/sd/lib/ -I/mnt/usb/include/\
+  -L/mnt/sd/lib/ -I/mnt/usb/include/
+make
+make install
 }}}
 
 == OpenOCD ==
