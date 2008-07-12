@@ -63,7 +63,7 @@ minicom
 
 {{{
 cd ~/dev/libs
-*sudo apt-get install libusb-dev*
+sudo apt-get install libusb-dev
 gzip -cd libftdi-0.13.tar.gz | tar xvf -
 cd libftdi-0.13
 ./configure
