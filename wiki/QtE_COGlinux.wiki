@@ -54,17 +54,21 @@ cd /var/tmp/silabs/rpmbuild/RPMS/i386
 sudo alien -iv cp210x-3.0.0-001.i386.rpm
 (plug USB cable into VCMX212 *THEN* into PC)
 dmesg | grep USB (to check to see if the install has worked)
+sudo apt-get install minicom
+sudo minicom -s
+minicom
 }}}
 
   * FTDI FT2232 (http://www.intra2net.com/de/produkte/opensource/ftdi/)
 
 {{{
 cd ~/dev/libs
+*sudo apt-get install libusb-dev*
 gzip -cd libftdi-0.13.tar.gz | tar xvf -
 cd libftdi-0.13
 ./configure
 make
-make install
+sudo make install
 }}}
 
   * Tslib (See next section 'Touch Screen Driver')
