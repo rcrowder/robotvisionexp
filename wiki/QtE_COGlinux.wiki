@@ -38,7 +38,7 @@ Sourcery G++ Lite 2008q1-126 for ARM GNU/Linux (http://www.codesourcery.com/gnu_
 {{{
 cd ~/Desktop
 chmod 777 arm-2008q1-126-arm-none-linux-gnueabi.bin
-./arm-2008q1-126-arm-none-linux-gnueabi.bin
+sudo ./arm-2008q1-126-arm-none-linux-gnueabi.bin
 }}}
 
 == Libraries ==
