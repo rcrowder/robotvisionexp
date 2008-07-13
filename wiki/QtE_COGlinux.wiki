@@ -4,7 +4,7 @@
 
 *!!!!WORK - IN - PROGRESS!!!!*
 
-_*!!Use at your owns risk!!*_
+_*!!Use at your own risk!!*_
 
 
 = Details =
@@ -35,8 +35,10 @@ Sourcery G++ Lite 2008q1-126 for ARM GNU/Linux (http://www.codesourcery.com/gnu_
 
 {{{
 cd ~/Desktop
-chmod 777 arm-2008q1-126-arm-none-linux-gnueabi.bin
+chmod 755 arm-2008q1-126-arm-none-linux-gnueabi.bin
 ./arm-2008q1-126-arm-none-linux-gnueabi.bin
+cd ~/CodeSourcery/Sourcery_G++_Lite/bin
+export PATH=${PWD}:${PATH}
 }}}
 
 == Libraries ==
@@ -68,8 +70,24 @@ make
 sudo make install
 }}}
 
-  * Tslib (See next section 'Touch Screen Driver')
+  * Tslib (See section below 'Touch Screen Driver')
 
+== OpenOCD ==
+
+http://openfacts.berlios.de/index-en.phtml?title=Open_On-Chip_Debugger
+http://buffalo.nas-central.org/index.php/JTAG_&_OpenOCD_for_LS-Pro
+http://forum.sparkfun.com/viewtopic.php?p=47245&highlight=#47245
+
+  * TODO: Does the USB codes match the existing OpenOCD VC config file?
+  * TODO: GDB Server??
+{{{
+cd ~/dev/drivers
+svn co svn://svn.berlios.de/openocd/trunk openocd
+cd openocd
+./bootstrap
+./configure --enable-ft2232_libftdi
+
+}}}
 
 == Touch Screen Driver ==
 
@@ -117,15 +135,6 @@ export QTEDIR=$PWD
 make
 make install
 }}}
-
-== OpenOCD ==
-
-http://openfacts.berlios.de/index-en.phtml?title=Open_On-Chip_Debugger
-http://buffalo.nas-central.org/index.php/JTAG_&_OpenOCD_for_LS-Pro
-http://forum.sparkfun.com/viewtopic.php?p=47245&highlight=#47245
-
-  * TODO: Does the USB codes match the existing OpenOCD VC config file?
-  * TODO: GDB Server??
 
 == Eclipse ==
 
