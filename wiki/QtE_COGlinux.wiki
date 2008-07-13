@@ -111,6 +111,7 @@ http://groups.google.co.uk/group/virtualcogs/browse_thread/thread/58528d8bf9f84e
 http://groups.google.co.uk/group/virtualcogs/browse_thread/thread/a45cbad09f73c852/4cc767cd11663d12?lnk=gst&q=DirectFB#4cc767cd11663d12
   * Edit config.h to comment out rpl_malloc
   * TODO: Sort out shared libraries setup in COGlinux
+
   # Make the shared library and tools
   {{{
   cd ~/dev/libs
