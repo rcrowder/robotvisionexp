@@ -80,7 +80,9 @@ http://buffalo.nas-central.org/index.php/JTAG_&_OpenOCD_for_LS-Pro
 http://forum.sparkfun.com/viewtopic.php?p=47245&highlight=#47245
 
   * TODO: Does the USB codes match the existing OpenOCD VC config file?
+          Yes, but ft2232_device_desc needed to change to "Olimex OpenOCD JTAG TINY"
   * TODO: GDB Server??
+          Comes with Codesourcery??
 {{{
 cd ~/dev/drivers
 svn co svn://svn.berlios.de/openocd/trunk openocd
@@ -88,8 +90,12 @@ cd openocd
 ./bootstrap
 ./configure --enable-ft2232_libftdi
 make
-make install
+sudo make install
+Add "none /proc/bus/usb usbfs auto,users,devmode=0666 0 0" to /etc/fstab
+cd ~/dev
+openocd -f vcmx212.cfg &
 }}}
+Use lsusb to check that the dongle is connected, eg.
 
 == Touch Screen Driver ==
 
