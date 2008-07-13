@@ -83,6 +83,7 @@ http://forum.sparkfun.com/viewtopic.php?p=47245&highlight=#47245
           Yes, but ft2232_device_desc needed to change to "Olimex OpenOCD JTAG TINY"
   * TODO: GDB Server??
           Comes with Codesourcery??
+
 {{{
 cd ~/dev/drivers
 svn co svn://svn.berlios.de/openocd/trunk openocd
@@ -95,7 +96,13 @@ Add "none /proc/bus/usb usbfs auto,users,devmode=0666 0 0" to /etc/fstab
 cd ~/dev
 openocd -f vcmx212.cfg &
 }}}
-Use lsusb to check that the dongle is connected, eg.
+Use lsusb to check that the dongle is connected, eg. for my Olimex ARM-USB-OCD there is the line "Bus 003 Device 003: ID 15ba:0004" (For others it could be "15ba:0003")..
+{{{
+cat /sys/bus/usb/devices/2-2/idProduct should equal "0004"
+cat /sys/bus/usb/devices/2-2/idVendor should equal "15ba"
+cat /sys/bus/usb/devices/2-2/manufacturer should equal "Olimex"
+cat /sys/bus/usb/devices/2-2/product should equal "Olimex OpenOCD JTAG TINY"
+}}}
 
 == Touch Screen Driver ==
 
