@@ -96,7 +96,7 @@ Add "none /proc/bus/usb usbfs auto,users,devmode=0666 0 0" to /etc/fstab
 cd ~/dev
 openocd -f vcmx212.cfg &
 }}}
-Use lsusb to check that the dongle is connected, eg. for my Olimex ARM-USB-OCD there is the line "Bus 003 Device 003: ID 15ba:0004" (For others it could be "15ba:0003")..
+Use lsusb to check that the dongle is connected, eg. for my Olimex ARM-USB-OCD there is the line "Bus 002 Device 003: ID 15ba:0004" (For others it could be "15ba:0003")..
 {{{
 cat /sys/bus/usb/devices/2-2/idProduct should equal "0004"
 cat /sys/bus/usb/devices/2-2/idVendor should equal "15ba"
