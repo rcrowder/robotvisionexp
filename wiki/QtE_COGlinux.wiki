@@ -15,6 +15,7 @@ Packages
   * build-essential
   * autoconf
   * automake
+  * texinfo
   * libtool
   * libusb-dev
   * SVN(Subversion) & CVS
@@ -26,7 +27,7 @@ mkdir dev
 cd dev
 mkdir libs
 mkdir drivers
-sudo apt-get install build-essential autoconf automake libtool libusb-dev subversion cvs rpm alien
+sudo apt-get install build-essential autoconf automake texinfo libtool libusb-dev subversion cvs rpm alien
 }}}
 
 == GNU ARM Toolchain ==
@@ -86,7 +87,8 @@ svn co svn://svn.berlios.de/openocd/trunk openocd
 cd openocd
 ./bootstrap
 ./configure --enable-ft2232_libftdi
-
+make
+make install
 }}}
 
 == Touch Screen Driver ==
