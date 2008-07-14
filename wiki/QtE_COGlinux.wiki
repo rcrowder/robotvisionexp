@@ -161,3 +161,5 @@ make install
 Qt integration (http://trolltech.com/developer/downloads/qt/eclipse-integration-download)
 
   * TODO: OpenOCD/GDB integration
+
+  # Follow the instructions for installing Eclipse and JRE from https://help.ubuntu.com/community/EclipseIDE
