@@ -119,7 +119,11 @@ http://groups.google.co.uk/group/virtualcogs/browse_thread/thread/a45cbad09f73c8
   cd tslib
   ./autogen.sh
   ./configure --host=arm-none-linux-gnueabi --prefix=/mnt/sd???
+  gedit config.h (to remove the '#define malloc rpl_malloc' line near end of file)
   make
+  make install
+  gedit /mnt/sd/etc/ts.conf (to uncomment the '# module_raw input' line)
+  cp ~/dev/tsc2100.ko /mnt/sd (copy over to SD card the touchscreen kernel module)
   }}}
   # Transfer to COGlinux file system
   # Test the tools, e.g. ts_calibrate
