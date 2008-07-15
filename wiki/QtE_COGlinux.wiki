@@ -107,9 +107,10 @@ cat /sys/bus/usb/devices/2-2/product should equal "Olimex OpenOCD JTAG TINY"
 == Touch Screen Driver ==
 
 http://www.jespersaur.com/drupal/node/30
+
 http://groups.google.co.uk/group/virtualcogs/browse_thread/thread/58528d8bf9f84e8d/51bffac0f45c68cb?lnk=gst&q=tslib#51bffac0f45c68cb
+
 http://groups.google.co.uk/group/virtualcogs/browse_thread/thread/a45cbad09f73c852/4cc767cd11663d12?lnk=gst&q=DirectFB#4cc767cd11663d12
-  * Edit config.h to comment out rpl_malloc
   * TODO: Sort out shared libraries setup in COGlinux
 
   # Make the shared library and tools
@@ -163,3 +164,4 @@ Qt integration (http://trolltech.com/developer/downloads/qt/eclipse-integration-
   * TODO: OpenOCD/GDB integration
 
   # Follow the instructions for installing Eclipse and JRE from https://help.ubuntu.com/community/EclipseIDE
+  # Continue with Virtual Cogs Wiki installation steps from http://wiki.virtualcogs.com/index.php?title=Eclipse_IDE_setup_with_Virtual_Cogs
