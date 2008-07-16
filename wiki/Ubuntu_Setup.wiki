@@ -85,8 +85,12 @@ sudo minicom -s
 minicom
 }}}
 
-  * FTDI FT2232 (http://www.intra2net.com/de/produkte/opensource/ftdi/)
+=== Olimex ARM-OCD-Tiny JTAG dongle ===
+I'm using this version of the Olimex JTAG dongle to connect to the VCMX212 and VC21RB1 JTAG ports. Thankfully the dongle uses a FTDI FT2232 based chip, so we can build the opensource libftdi library. This library will then be used with OpenOCD to allow the GDB debugger to talk via JTAG with the ARM processors.
 
+The current version of libftdi is 0.13, taken from; http://www.intra2net.com/de/produkte/opensource/ftdi/
+
+Steps required to build libftdi are;
 {{{
 cd ~/dev/libs
 gzip -cd libftdi-0.13.tar.gz | tar xvf -
@@ -96,17 +100,17 @@ make
 sudo make install
 }}}
 
-== OpenOCD ==
-
+=== OpenOCD ===
 http://openfacts.berlios.de/index-en.phtml?title=Open_On-Chip_Debugger
+
 http://buffalo.nas-central.org/index.php/JTAG_&_OpenOCD_for_LS-Pro
+
 http://forum.sparkfun.com/viewtopic.php?p=47245&highlight=#47245
 
   * TODO: Does the USB codes match the existing OpenOCD VC config file?
           Yes, but ft2232_device_desc needed to change to "Olimex OpenOCD JTAG TINY"
   * TODO: GDB Server??
           Comes with Codesourcery??
-
 {{{
 cd ~/dev/drivers
 svn co svn://svn.berlios.de/openocd/trunk openocd
