@@ -13,6 +13,8 @@ _*!!Use at your own risk!!*_
 
 http://www.jespersaur.com/drupal/node/30
 
+http://linux-toolbox.blogspot.com/2008/04/cross-compiling-tslib.html
+
 http://groups.google.co.uk/group/virtualcogs/browse_thread/thread/58528d8bf9f84e8d/51bffac0f45c68cb?lnk=gst&q=tslib#51bffac0f45c68cb
 
 http://groups.google.co.uk/group/virtualcogs/browse_thread/thread/a45cbad09f73c852/4cc767cd11663d12?lnk=gst&q=DirectFB#4cc767cd11663d12
