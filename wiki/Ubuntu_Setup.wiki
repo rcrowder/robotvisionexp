@@ -58,10 +58,14 @@ cd ~/CodeSourcery/Sourcery_G++_Lite/bin
 export PATH=${PWD}:${PATH}
 }}}
 
-== Libraries ==
+== Libraries & Drivers ==
 
-  * CP210x USB to UART Bridge VCP Drivers (http://www.silabs.com/tgwWebApp/public/web_content/products/Microcontrollers/USB/en/mcu_vcp.htm)
+=== Silabs USB Bridge ===
+To connect and talk to the VCMX212 via the USB-USB(UART) bridge, the Silabs driver needs to be built and installed.
 
+The current version at time of writting is 3.0.0, from; CP210x USB to UART Bridge VCP Drivers (http://www.silabs.com/tgwWebApp/public/web_content/products/Microcontrollers/USB/en/mcu_vcp.htm)
+
+The install creates a RPM, so we use the alien package to convert and install it;
 {{{
 cd ~/dev/drivers
 gzip -cd cp210x-3.0.0.tar.gz | tar xvf -
@@ -69,8 +73,13 @@ cd cp210x-3.0.0
 ./makerpm
 cd /var/tmp/silabs/rpmbuild/RPMS/i386
 sudo alien -iv cp210x-3.0.0-001.i386.rpm
-(plug USB cable into VCMX212 *THEN* into PC)
-dmesg | grep USB (to check to see if the install has worked)
+}}}
+
+Now to test if it is working.. Firstly plug the mini-USB edge of the cable into the VCMX212, then plug the other end into the PC. We can then use dmesg to see if the Silabs driver gets loaded, and minicom as the UART terminal program to talk to the VCMX212.
+
+The first time minicom is called, we need to use the -s option to enter the setup menus. So that we can change the port and baud rate. Typically the Silabs driver hangs off of /dev/ttyUSB0, although this can vary. Plus the required baud rate is different from the rate described in the VCMX212 Manual PDF, and needs to be set to 230400 (8N1).
+{{{
+dmesg | grep USB
 sudo apt-get install minicom
 sudo minicom -s
 minicom
