@@ -112,6 +112,7 @@ Qt integration (http://trolltech.com/developer/downloads/qt/eclipse-integration-
 
   # Follow the instructions for installing Eclipse and JRE from https://help.ubuntu.com/community/EclipseIDE
   # Continue with Virtual Cogs Wiki installation steps from http://wiki.virtualcogs.com/index.php?title=Eclipse_IDE_setup_with_Virtual_Cogs
+
 == Touch Screen Driver ==
 
 http://www.jespersaur.com/drupal/node/30
