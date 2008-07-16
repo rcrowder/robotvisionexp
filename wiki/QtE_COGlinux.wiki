@@ -104,6 +104,14 @@ cat /sys/bus/usb/devices/2-2/manufacturer should equal "Olimex"
 cat /sys/bus/usb/devices/2-2/product should equal "Olimex OpenOCD JTAG TINY"
 }}}
 
+== Eclipse ==
+
+Qt integration (http://trolltech.com/developer/downloads/qt/eclipse-integration-download)
+
+  * TODO: OpenOCD/GDB integration
+
+  # Follow the instructions for installing Eclipse and JRE from https://help.ubuntu.com/community/EclipseIDE
+  # Continue with Virtual Cogs Wiki installation steps from http://wiki.virtualcogs.com/index.php?title=Eclipse_IDE_setup_with_Virtual_Cogs
 == Touch Screen Driver ==
 
 http://www.jespersaur.com/drupal/node/30
@@ -156,12 +164,3 @@ export QTEDIR=$PWD
 make
 make install
 }}}
-
-== Eclipse ==
-
-Qt integration (http://trolltech.com/developer/downloads/qt/eclipse-integration-download)
-
-  * TODO: OpenOCD/GDB integration
-
-  # Follow the instructions for installing Eclipse and JRE from https://help.ubuntu.com/community/EclipseIDE
-  # Continue with Virtual Cogs Wiki installation steps from http://wiki.virtualcogs.com/index.php?title=Eclipse_IDE_setup_with_Virtual_Cogs
