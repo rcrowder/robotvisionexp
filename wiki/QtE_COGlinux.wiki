@@ -26,7 +26,10 @@ http://groups.google.co.uk/group/virtualcogs/browse_thread/thread/a45cbad09f73c8
   svn co svn://svn.berlios.de/tslib/trunk/tslib tslib
   cd tslib
   ./autogen.sh
-  ./configure --host=arm-none-linux-gnueabi --prefix=/mnt/sd???
+  ./configure --host=arm-none-linux-gnueabi --prefix=/mnt/sd??? \
+    --disable-linear-h2200 --disable-ucb1x00 --disable-corgi \
+    --disable-collie --disable-h3600 --disable-mk712 \
+    --disable-arctic2 --disable-tatung
   gedit config.h (to remove the '#define malloc rpl_malloc' line near end of file)
   make
   make install
