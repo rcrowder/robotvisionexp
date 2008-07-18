@@ -70,3 +70,5 @@ make install
 == Extras ==
 
 http://wiki.java.net/bin/view/Mobileandembedded/PhoneMEAdvancedBuildInstructions?TWIKISID=658314976c64cf27ad00d110126f55c5
+
+http://jamvm.sourceforge.net/ (Not IBM or Sun Classpath??)
