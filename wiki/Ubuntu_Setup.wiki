@@ -61,6 +61,8 @@ export PATH=${PWD}:${PATH}
 == Libraries & Drivers ==
 
 === Silabs USB Bridge ===
+http://www.etheus.net/CP210x_Linux_Driver
+
 To connect and talk to the VCMX212 via the USB-USB(UART) bridge, the Silabs driver needs to be built and installed.
 
 The current version at time of writting is 3.0.0, from; CP210x USB to UART Bridge VCP Drivers (http://www.silabs.com/tgwWebApp/public/web_content/products/Microcontrollers/USB/en/mcu_vcp.htm)
