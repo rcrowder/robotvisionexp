@@ -74,7 +74,8 @@ gzip -cd cp210x-3.0.0.tar.gz | tar xvf -
 cd cp210x-3.0.0
 ./makerpm
 cd /var/tmp/silabs/rpmbuild/RPMS/i386
-sudo alien -iv cp210x-3.0.0-001.i386.rpm
+sudo alien --to-deb -scripts cp210x-3.0.0-001.i386.rpm
+sudo dpkg -i ./cp210x_3.0.0-2_i386.deb
 }}}
 
 Now to test if it is working.. Firstly plug the mini-USB edge of the cable into the VCMX212, then plug the other end into the PC. We can then use dmesg to see if the Silabs driver gets loaded, and minicom as the UART terminal program to talk to the VCMX212.
@@ -82,6 +83,7 @@ Now to test if it is working.. Firstly plug the mini-USB edge of the cable into 
 The first time minicom is called, we need to use the -s option to enter the setup menus. So that we can change the port and baud rate. Typically the Silabs driver hangs off of /dev/ttyUSB0, although this can vary. Plus the required baud rate is different from the rate described in the VCMX212 Manual PDF, and needs to be set to 230400 (8N1).
 {{{
 dmesg | grep USB
+ldmod | grep cp21
 sudo apt-get install minicom
 sudo minicom -s
 minicom
