@@ -61,7 +61,7 @@ export PATH=${PWD}:${PATH}
 
 == Libraries & Drivers ==
 
-=== Silabs USB Bridge - *WARNING!! Driver is unstable* ===
+=== Silabs USB Bridge - *WARNING !!!Driver is unstable/crashing!!!* ===
 http://www.etheus.net/CP210x_Linux_Driver
 
 To connect and talk to the VCMX212 via the USB-USB(UART) bridge, the Silabs driver needs to be built and installed.
