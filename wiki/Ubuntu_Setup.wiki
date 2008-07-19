@@ -151,4 +151,5 @@ Qt integration (http://trolltech.com/developer/downloads/qt/eclipse-integration-
   # And the SourceForge VC FAQ (http://sourceforge.net/cvs/?group_id=196361)
   # Rebuild kernel (http://wiki.virtualcogs.com/index.php?title=Building_Linux)
     * Don't for get to grab libncurses5-dev
+    * And edit the Makefile (after 'make menuconfig' step) to change the CROSS_COMPILE define
   # Reflash kernel (http://wiki.virtualcogs.com/index.php?title=Reflashing_Linux_Kernel)
