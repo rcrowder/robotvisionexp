@@ -89,6 +89,8 @@ sudo minicom -s
 minicom
 }}}
 
+==== Issues ====
+
 === Olimex ARM-OCD-Tiny JTAG dongle ===
 I'm using this version of the Olimex JTAG dongle to connect to the VCMX212 and VC21RB1 JTAG ports. Thankfully the dongle uses a FTDI FT2232 based chip, so we can build the opensource libftdi library. This library will then be used with OpenOCD to allow the GDB debugger to talk via JTAG with the ARM processors.
 
