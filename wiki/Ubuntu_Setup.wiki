@@ -66,7 +66,7 @@ http://www.etheus.net/CP210x_Linux_Driver
 
 To connect and talk to the VCMX212 via the USB-USB(UART) bridge, the Silabs driver needs to be built and installed.
 
-The current version at time of writting is 3.0.0, from; CP210x USB to UART Bridge VCP Drivers (https://www.silabs.com/support/pages/support.aspx?ProductFamily=USB+to+UART)
+The current version at time of writing is 3.0.0, from; CP210x USB to UART Bridge VCP Drivers (https://www.silabs.com/support/pages/support.aspx?ProductFamily=USB+MCUs)
 
 The install creates a RPM, so we use the alien package to convert and install it;
 {{{
@@ -78,7 +78,6 @@ cd /var/tmp/silabs/rpmbuild/RPMS/i386
 sudo alien --to-deb -scripts cp210x-3.0.0-001.i386.rpm
 sudo dpkg -i ./cp210x_3.0.0-2_i386.deb
 }}}
-
 Now to test if it is working.. Firstly plug the mini-USB edge of the cable into the VCMX212, then plug the other end into the PC. We can then use dmesg to see if the Silabs driver gets loaded, and minicom as the UART terminal program to talk to the VCMX212.
 
 The first time minicom is called, we need to use the -s option to enter the setup menus. So that we can change the port and baud rate. Typically the Silabs driver hangs off of /dev/ttyUSB0, although this can vary. Plus the required baud rate is different from the rate described in the VCMX212 Manual PDF, and needs to be set to 230400 (8N1).
