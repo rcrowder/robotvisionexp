@@ -104,17 +104,21 @@ Jul 19 14:21:29 rcrowder-laptop kernel: [  655.190553] ---[ end trace a90ad88ceb
 }}}
 _Ongoing_ steps to resolve this issue..
 {{{
-uname -r
-sudo apt-get install linux-source-2.6.24
 cd /usr/src
+sudo apt-get build-dep linux-image-$(uname -r)
+apt-get source linux-image-$(uname -r)
 sudo tar xjvf linux-source-2.6.24.tar.bz2
 cd linux-source-2.6.24
-sudo cp /boot/config-2.6.24-19-generic .config
+sudo cp -vi /boot/config-`uname -r` .config
 sudo make oldconfig
+sudo make prepare
 sudo make
+sudo touch include/linux/config.h
 ...
 cd ~/dev/drivers/cp2103-0.11.0
-./configure -kver 2.6.24-19-generic
+./configure -kver $(uname -r) -kinc /usr/src/linux-2.6.24/include -kpath /usr/src/linux-2.6.24
+make -f Makefile.go modules
+sudo make -f Makefile.go install
 }}}
 
 === Olimex ARM-OCD-Tiny JTAG dongle ===
