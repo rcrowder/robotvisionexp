@@ -53,8 +53,13 @@ sudo make prepare
 sudo make
 sudo touch include/linux/config.h
 ...
-cd ~/dev/drivers/cp2103-0.11.0
-./configure -kver $(uname -r) -kinc /usr/src/linux-2.6.24/include -kpath /usr/src/linux-2.6.24
-make -f Makefile.go modules
+cd ~/dev/drivers
+Extract cp2103-0.11.0-1.src.rpm from linux_VCP_v26_driver_src.zip
+Extract cp2103-0.11.0.tar.gz from the rpm
+gunzip cp2103-0.11.0.tar.gz
+tar xvf cp2103-0.11.0.tar
+cd cp2103-0.11.0
+./configure -kver $(uname -r)
+sudo make -f Makefile.go modules
 sudo make -f Makefile.go install
 }}}
