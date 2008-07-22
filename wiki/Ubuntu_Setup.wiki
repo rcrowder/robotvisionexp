@@ -124,6 +124,7 @@ sudo make -f Makefile.go install
 === Olimex ARM-OCD-Tiny JTAG dongle ===
 I'm using this version of the Olimex JTAG dongle to connect to the VCMX212 and VC21RB1 JTAG ports. Thankfully the dongle uses a FTDI FT2232 based chip, so we can build the opensource libftdi library. This library will then be used with OpenOCD to allow the GDB debugger to talk via JTAG with the ARM processors.
 
+==== libftdi ====
 The current version of libftdi is 0.13, taken from; http://www.intra2net.com/de/produkte/opensource/ftdi/
 
 Steps required to build libftdi are;
@@ -136,7 +137,7 @@ make
 sudo make install
 }}}
 
-=== OpenOCD ===
+==== OpenOCD ====
 http://openfacts.berlios.de/index-en.phtml?title=Open_On-Chip_Debugger
 
 http://buffalo.nas-central.org/index.php/JTAG_&_OpenOCD_for_LS-Pro
