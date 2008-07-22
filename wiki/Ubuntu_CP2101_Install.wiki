@@ -4,55 +4,22 @@
 
 To connect and talk to the VCMX212 via the USB-USB(UART) bridge, the Silabs driver needs to be built and installed.
 
-The current version at time of writing is 3.0.0, from; CP210x USB to UART Bridge VCP Drivers (https://www.silabs.com/support/pages/support.aspx?ProductFamily=USB+MCUs)
+The current version at time of writing is 3.0.0, from; linux_VCP_v26_driver_src.zip (https://www.silabs.com/support/pages/support.aspx?ProductFamily=USB+MCUs)
 
-The install creates a RPM, so we use the alien package to convert and install it;
 {{{
-cd ~/dev/drivers
-gzip -cd cp210x-3.0.0.tar.gz | tar xvf -
-cd cp210x-3.0.0
-./makerpm
-cd /var/tmp/silabs/rpmbuild/RPMS/i386
-sudo alien --to-deb -scripts cp210x-3.0.0-001.i386.rpm
-sudo dpkg -i ./cp210x_3.0.0-2_i386.deb
+~~cd /usr/src
+~~sudo apt-get build-dep linux-image-$(uname -r)
+~~apt-get source linux-image-$(uname -r)
+~~sudo tar xjvf linux-source-2.6.24.tar.bz2
+~~cd linux-source-2.6.24
+~~sudo cp -vi /boot/config-`uname -r` .config
+~~sudo make oldconfig
+~~sudo make prepare
+~~sudo make
 }}}
-Now to test if it is working.. Firstly plug the mini-USB edge of the cable into the VCMX212, then plug the other end into the PC. We can then use dmesg to see if the Silabs driver gets loaded, and minicom as the UART terminal program to talk to the VCMX212.
-
-The first time minicom is called, we need to use the -s option to enter the setup menus. So that we can change the port and baud rate. Typically the Silabs driver hangs off of /dev/ttyUSB0, although this can vary. Plus the required baud rate is different from the rate described in the VCMX212 Manual PDF, and needs to be set to 230400 (8N1).
-{{{
-dmesg | grep USB
-ldmod | grep cp21
-sudo apt-get install minicom
-sudo minicom -s
-minicom
-}}}
-
-==== Issues ====
-
-minicom has started hanging in a terminal window :( Looks like the driver is going wrong..
-{{{
-Jul 19 14:21:29 rcrowder-laptop kernel: [  655.189789] 
-Jul 19 14:21:29 rcrowder-laptop kernel: [  655.189796] Pid: 6004, comm: minicom Tainted: P        (2.6.24-19-generic #1)
-Jul 19 14:21:29 rcrowder-laptop kernel: [  655.189805] EIP: 0060:[<f8c07673>] EFLAGS: 00010246 CPU: 0
-Jul 19 14:21:29 rcrowder-laptop kernel: [  655.189825] EIP is at silabs_cp210x_set_termios+0xaa3/0xab0 [cp210x]
-Jul 19 14:21:29 rcrowder-laptop kernel: [  655.189832] EAX: 00384000 EBX: 00012000 ECX: 00000000 EDX: 00000000
-Jul 19 14:21:29 rcrowder-laptop kernel: [  655.189840] ESI: e27b3800 EDI: 00000cb0 EBP: e3b5bc00 ESP: c4fa9d90
-Jul 19 14:21:29 rcrowder-laptop kernel: [  655.189847]  DS: 007b ES: 007b FS: 00d8 GS: 0033 SS: 0068
-Jul 19 14:21:29 rcrowder-laptop kernel: [  655.190553] ---[ end trace a90ad88ceb5f63b7 ]---
-}}}
-_Ongoing_ steps to resolve this issue..
-{{{
-cd /usr/src
-sudo apt-get build-dep linux-image-$(uname -r)
-apt-get source linux-image-$(uname -r)
-sudo tar xjvf linux-source-2.6.24.tar.bz2
-cd linux-source-2.6.24
-sudo cp -vi /boot/config-`uname -r` .config
-sudo make oldconfig
-sudo make prepare
-sudo make
-sudo touch include/linux/config.h
 ...
+{{{
+sudo touch /usr/src/`uname -r`/include/linux/config.h
 cd ~/dev/drivers
 Extract cp2103-0.11.0-1.src.rpm from linux_VCP_v26_driver_src.zip
 Extract cp2103-0.11.0.tar.gz from the rpm
@@ -60,6 +27,20 @@ gunzip cp2103-0.11.0.tar.gz
 tar xvf cp2103-0.11.0.tar
 cd cp2103-0.11.0
 ./configure -kver $(uname -r)
+cp Makefile26 Makefile
+gedit cp2101.c (to change '#include "usb-serial.h"' to '#include <linux/usb/serial.h>'
 sudo make -f Makefile.go modules
+chmod 755 installmod
 sudo make -f Makefile.go install
+}}}
+
+Now to test if it is working.. Firstly plug the mini-USB edge of the cable into the VCMX212, then plug the other end into the PC. We can then use dmesg to see if the Silabs driver gets loaded, and minicom as the UART terminal program to talk to the VCMX212.
+
+The first time minicom is called, we need to use the -s option to enter the setup menus. So that we can change the port and baud rate. Typically the Silabs driver hangs off of /dev/ttyUSB0, although this can vary. Plus the required baud rate is different from the rate described in the VCMX212 Manual PDF, and needs to be set to 230400 (8N1).
+{{{
+dmesg | grep USB
+lsmod | grep cp21
+sudo apt-get install minicom
+sudo minicom -s
+minicom
 }}}
