@@ -9,14 +9,14 @@ The current version at time of writing is 3.0.0, from; linux_VCP_v26_driver_src.
 {{{
 sudo touch /usr/src/`uname -r`/include/linux/config.h (or should this be sudo touch /usr/src/linux-headers-`uname -r`/include/linux/config.h
 cd ~/dev/drivers
-Extract cp2103-0.11.0-1.src.rpm from linux_VCP_v26_driver_src.zip
-Extract cp2103-0.11.0.tar.gz from the rpm
+#Extract cp2103-0.11.0-1.src.rpm from linux_VCP_v26_driver_src.zip
+#Extract cp2103-0.11.0.tar.gz from the rpm
 gunzip cp2103-0.11.0.tar.gz
 tar xvf cp2103-0.11.0.tar
 cd cp2103-0.11.0
 ./configure -kver $(uname -r)
 cp Makefile26 Makefile
-gedit cp2101.c (to change '#include "usb-serial.h"' to '#include <linux/usb/serial.h>'
+gedit cp2101.c (to change '#include "usb-serial.h"' to '#include <linux/usb/serial.h>')
 sudo make -f Makefile.go modules
 chmod 755 installmod
 sudo make -f Makefile.go install
