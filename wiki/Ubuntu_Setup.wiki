@@ -68,7 +68,7 @@ The cp2101 kernel module exists in my version of Ubutu (Hardy 8.04). And should 
 
 Now to test if it is working.. Firstly plug the mini-USB edge of the cable into the VCMX212, then plug the other end into the PC. We can then use dmesg to see if the Silabs driver gets loaded, and minicom as the UART terminal program to talk to the VCMX212.
 
-The first time minicom is called, we need to use the -s option to enter the setup menus. So that we can change the port and baud rate. Typically the Silabs driver hangs off of /dev/ttyUSB0, although this can vary. Plus the required baud rate is different from the rate described in the VCMX212 Manual PDF, and needs to be set to 230400 (8N1).
+The first time minicom is called, we need to use the -s option to enter the setup menus, so that we can change the port and baud rate. Typically the Silabs driver hangs off of /dev/ttyUSB0. Plus the required baud rate is different from the rate described in the VCMX212 Manual PDF, and needs to be set to 230400 (8N1).
 {{{
 dmesg | grep USB
 lsmod | grep cp21
