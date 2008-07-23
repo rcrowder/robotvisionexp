@@ -29,6 +29,7 @@ The first time minicom is called, we need to use the -s option to enter the setu
 dmesg | grep USB
 lsmod | grep cp21
 sudo apt-get install minicom
+sudo apt-get install lrzsz
 sudo minicom -s
 minicom
 }}}
