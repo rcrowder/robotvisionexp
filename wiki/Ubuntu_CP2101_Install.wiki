@@ -2,12 +2,10 @@
 
 = Introduction =
 
-To connect and talk to the VCMX212 via the USB-USB(UART) bridge, the Silabs driver needs to be built and installed.
-
 The current version at time of writing is 3.0.0, from; linux_VCP_v26_driver_src.zip (https://www.silabs.com/support/pages/support.aspx?ProductFamily=USB+MCUs)
 
 {{{
-sudo touch /usr/src/`uname -r`/include/linux/config.h (or should this be sudo touch /usr/src/linux-headers-`uname -r`/include/linux/config.h
+sudo touch /usr/src/`uname -r`/include/linux/config.h
 cd ~/dev/drivers
 #Extract cp2103-0.11.0-1.src.rpm from linux_VCP_v26_driver_src.zip
 #Extract cp2103-0.11.0.tar.gz from the rpm
