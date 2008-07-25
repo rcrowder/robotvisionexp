@@ -41,12 +41,13 @@ http://groups.google.co.uk/group/virtualcogs/browse_thread/thread/a45cbad09f73c8
   # Copy over and soft-link missing shared libraries (libc, libdl, etc)
   {{{
   cd ~/CodeSourcery/Sourcery_G++_Lite/arm-none-linux-gnueabi/libc/lib
+  cp ld-2.5.so /mnt/sd/lib
   cp libc-2.5.so /mnt/sd/lib
   cp libdl-2.5.so /mnt/sd/lib
   cp libm-2.5.so /mnt/sd/lib
-  cp libpthread-2.5.so /mnt/sd/lib
-  cp libthread_db-1.0.so /mnt/sd/lib
+
   ... Move SD card to VC21BR1
+
   mount /mnt/sd
   cd /mnt/sd
   insmod tsc2100.ko
