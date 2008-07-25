@@ -1,6 +1,6 @@
 #summary Configuration of HyperTerminal for VCMX212
 
-= HyperTerminal configuration for VCMX212 =
+= !HyperTerminal configuration for VCMX212 =
 
 COM port settings:
 ||Bits per second:||230400||
