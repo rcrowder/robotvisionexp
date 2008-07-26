@@ -33,7 +33,7 @@ mkdir drivers
   * automake
   * texinfo
   * mtd-tools
-  * bison
+  * flex & bison
   * libtool
   * libusb-dev
   * libncurses5-dev
@@ -43,7 +43,7 @@ mkdir drivers
 To grab and install the latest versions of these packages, the following can be performed;
 {{{
 cd ~
-sudo apt-get install build-essential autoconf automake texinfo mtd-tools bison libtool libusb-dev libncurses5-dev subversion cvs rpm alien
+sudo apt-get install build-essential autoconf automake texinfo mtd-tools flex bison libtool libusb-dev libncurses5-dev subversion cvs rpm alien
 }}}
 
 == GNU ARM Toolchain ==
