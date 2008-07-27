@@ -46,19 +46,27 @@ cd ~
 sudo apt-get install build-essential autoconf automake texinfo mtd-tools flex bison libtool libusb-dev libncurses5-dev subversion cvs rpm alien
 }}}
 
-== GNU ARM Toolchain ==
+== GNU ARM Toolchain (Cross compiler) ==
 
-Now we need an ARM compiler for cross-compiling for the VCMX212 target. Virtual Cogs recommends and supplies (via a link on their main web support page) the GNUArm.org toolchain. That is quite a simply way of installing the ARM toolchain under Windows/Cygwin, but I've prefered to use the CodeSourcery based toolchain. The main reason is that the CodeSourcery toolchain is actively being developed in partnership with ARM, Ltd.
+Now we need an ARM compiler to cross compile for the VCMX212 target. Virtual Cogs recommends and supplies (via a link on their main web support page) the GNUArm.org toolchain. That is quite a simply way of installing the ARM toolchain under Windows/Cygwin, but we need to make some changes to one of the build patches to make it compiler under Ubuntu (Hardy 8.04).
 
-The version used for this installation is; Sourcery G++ Lite 2008q1-126 for ARM GNU/Linux (http://www.codesourcery.com/gnu_toolchains/arm)
+The version used for this installation is; http://www.virtualcogs.com/downloads/crosstool-0.43.tar.gz
 
 Installation steps are simply;
 {{{
-cd ~/Desktop
-chmod 755 arm-2008q1-126-arm-none-linux-gnueabi.bin
-./arm-2008q1-126-arm-none-linux-gnueabi.bin
-cd ~/CodeSourcery/Sourcery_G++_Lite/bin
-export PATH=${PWD}:${PATH}
+# Refer to this VC Wiki page for building the crosstool chain http://wiki.virtualcogs.com/index.php?title=Toolchain_Installation
+# Extract crosstool-0.43.tar.gz into ~/dev/crosstool-0.43
+cd ~/dev/crosstool-0.43
+# Dealing with demo-arm.sh and arm.dat as outlined in the VC Wiki
+# We also need to modify a patch to allow 4.2+ gcc compilers.
+gedit patches/glibc-2.3.2/glibc-2.3.3-allow-gcc-4.0-configure.patch
+# Change the line
+'+    3.[2-9]*|4.[01]*)' to
+'+    3.[2-9]*|4.[012]*)'
+# Remove the backup file gedit creates
+rm patches/glibc-2.3.2/glibc-2.3.3-allow-gcc-4.0-configure.patch~
+# Lets try a build
+./demo-arm.sh
 }}}
 
 == Libraries & Drivers ==
