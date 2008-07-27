@@ -59,6 +59,11 @@ The version used for this installation is; http://www.virtualcogs.com/downloads/
 
 Installation steps are simply;
 {{{
+# Prepare target directory
+sudo mkdir /opt/crosstool
+sudo chmod 775 /opt
+sudo chmod 775 /opt/crosstool
+sudo chown ????:???? /opt/crosstool (change to your user:group)
 # Refer to this VC Wiki page for building the crosstool chain http://wiki.virtualcogs.com/index.php?title=Toolchain_Installation
 # Extract crosstool-0.43.tar.gz into ~/dev/crosstool-0.43
 cd ~/dev/crosstool-0.43
