@@ -46,6 +46,11 @@ cd ~
 sudo apt-get install build-essential autoconf automake texinfo mtd-tools flex bison libtool libusb-dev libncurses5-dev subversion cvs rpm alien
 }}}
 
+Make sure we're using bash instead of dash
+{{{
+sudo ln -sf /bin/bash /bin/sh
+}}}
+
 == GNU ARM Toolchain (Cross compiler) ==
 
 Now we need an ARM compiler to cross compile for the VCMX212 target. Virtual Cogs recommends and supplies (via a link on their main web support page) the GNUArm.org toolchain. That is quite a simply way of installing the ARM toolchain under Windows/Cygwin, but we need to make some changes to one of the build patches to make it compiler under Ubuntu (Hardy 8.04).
@@ -68,6 +73,8 @@ rm patches/glibc-2.3.2/glibc-2.3.3-allow-gcc-4.0-configure.patch~
 # Lets try a build
 ./demo-arm.sh
 }}}
+
+If you get issues with version-info.h missing terminating " character, you need to upgrate automake to v1.9+ This forum [http://www.triple-dragon-fan.de/board/thread.php?threadid=2846 thread] describes the problem and fixes.
 
 == Libraries & Drivers ==
 
