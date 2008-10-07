@@ -1,0 +1,5 @@
+#summary Erasing the VCMX212 flash.
+
+  # Close jumper JP300
+  # Using HAB toolkit or Booter, load the file flash_erase.bin to address 0xc0200000
+  # Wait one minute 
