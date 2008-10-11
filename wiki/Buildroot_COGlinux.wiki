@@ -14,4 +14,4 @@ cd ~/dev
 svn co svn://uclibc.org/trunk/buildroot
 }}}
 
-BUSYBOX_CONFIG_FILE=<path/to/.config>
+BUSYBOX_CONFIG_FILE=~/dev/busybox_vcmx212_defconfig
