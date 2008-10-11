@@ -1,0 +1,6 @@
+#summary WIP details for getting Buildroot setup for COGlinux.
+
+{{{
+cd ~/dev
+svn co svn://uclibc.org/trunk/buildroot
+}}}
