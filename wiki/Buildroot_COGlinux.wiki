@@ -9,9 +9,32 @@ _*!!Use at your own risk!!*_
 
 = Details =
 
+First we need to grab the latest SVN snapshot.
+
 {{{
 cd ~/dev
 svn co svn://uclibc.org/trunk/buildroot
 }}}
 
+And make sure that the baseline default VCMX212 config is used.
+
 BUSYBOX_CONFIG_FILE=~/dev/busybox_vcmx212_defconfig
+
+Tar up the VC CVS 2.6.22 linux.
+
+{{{
+cd ~/dev/coglinux
+mv coglinux-2.6.22 linux-2.6.22
+tar -cvf linux-2.6.22.tar linux-2.6.22/
+bzip2 -c linux-2.6.22.tar > linux-2.6.22.tar.bz2
+rm linux-2.6.22.tar
+mkdir ~/dev/buildroot/dl
+cp linux-2.6.22.tar.bz2 ~/dev/buildroot/dl
+}}}
+
+Setup buildroot config
+
+{{{
+cd ~/dev/buildroot
+make menuconfig
+}}}
