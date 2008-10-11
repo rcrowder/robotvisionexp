@@ -40,4 +40,8 @@ Setup buildroot config
 {{{
 cd ~/dev/buildroot
 make menuconfig
+gedit .config (to overcome issues with Linux header version)
+make source
+cp ~/dev/coglinux/rootfs/devtable.txt ~/dev/buildroot/target/generic/device_table.txt
+make
 }}}
