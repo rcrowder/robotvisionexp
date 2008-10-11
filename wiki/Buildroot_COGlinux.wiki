@@ -1,6 +1,17 @@
 #summary WIP details for getting Buildroot setup for COGlinux.
 
+= Introduction =
+
+*!!!!WORK - IN - PROGRESS!!!!*
+
+_*!!Use at your own risk!!*_
+
+
+= Details =
+
 {{{
 cd ~/dev
 svn co svn://uclibc.org/trunk/buildroot
 }}}
+
+BUSYBOX_CONFIG_FILE=<path/to/.config>
