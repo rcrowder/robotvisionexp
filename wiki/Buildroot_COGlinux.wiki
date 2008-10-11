@@ -45,3 +45,8 @@ make source
 cp ~/dev/coglinux/rootfs/devtable.txt ~/dev/buildroot/target/generic/device_table.txt
 make
 }}}
+
+{{{
+sudo apt-get install liblzo2-dev acl-dev 
+make WITHOUT_XATTR=1
+}}}
