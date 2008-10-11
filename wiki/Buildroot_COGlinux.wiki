@@ -50,3 +50,7 @@ make
 sudo apt-get install liblzo2-dev acl-dev 
 make WITHOUT_XATTR=1
 }}}
+
+{{{
+gedit drivers/mtd/chips/cfi_cmdset_0001.c : do_erase_oneblock() function, Change line to "int retries = 30;"
+}}}
