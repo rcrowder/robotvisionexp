@@ -24,12 +24,15 @@ Tar up the VC CVS 2.6.22 linux.
 
 {{{
 cd ~/dev/coglinux
-mv coglinux-2.6.22 linux-2.6.22
-tar -cvf linux-2.6.22.tar linux-2.6.22/
-bzip2 -c linux-2.6.22.tar > linux-2.6.22.tar.bz2
+mv coglinux-2.6.22 linux-2.6.22-vc
+cd linux-2.6.22-vc/arch/arm/configs
+cp vcmx212_defconfig arm_defconfig
+cd ~/dev/coglinux
+tar -cvf linux-2.6.22-vc.tar linux-2.6.22-vc/
+bzip2 -c linux-2.6.22-vc.tar > linux-2.6.22-vc.tar.bz2
 rm linux-2.6.22.tar
 mkdir ~/dev/buildroot/dl
-cp linux-2.6.22.tar.bz2 ~/dev/buildroot/dl
+cp linux-2.6.22-vc.tar.bz2 ~/dev/buildroot/dl
 }}}
 
 Setup buildroot config
