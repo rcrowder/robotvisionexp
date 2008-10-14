@@ -16,6 +16,13 @@ cd ~/dev
 svn co svn://uclibc.org/trunk/buildroot
 }}}
 
+Now for the latest MTD GIT
+
+{{{
+cd ~/dev
+git clone git://git.infradead.org/mtd-2.6.git mtd-2.6
+}}}
+
 And make sure that the baseline default VCMX212 config is used.
 
 BUSYBOX_CONFIG_FILE=~/dev/busybox_vcmx212_defconfig
