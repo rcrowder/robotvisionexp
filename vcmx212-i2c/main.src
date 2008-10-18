@@ -1,0 +1,1044 @@
+
+main:     file format elf32-littlearm
+
+Disassembly of section .text:
+
+c0200000 <_mainCRTStartup>:
+/cygdrive/d/Robotics/Workspace/RobotVisionExp/vcmx212-i2c/crt0.S:20
+_mainCRTStartup:
+
+/* Start by setting up a stack */
+	/*  Set up the stack pointer to end of bss */
+	ldr	r3, .LC2
+c0200000:	e59f3004 	ldr	r3, [pc, #4]	; c020000c <.text+0xc>
+/cygdrive/d/Robotics/Workspace/RobotVisionExp/vcmx212-i2c/crt0.S:21
+	mov 	sp, r3
+c0200004:	e1a0d003 	mov	sp, r3
+/cygdrive/d/Robotics/Workspace/RobotVisionExp/vcmx212-i2c/crt0.S:23
+
+	bl	main
+c0200008:	eb000166 	bl	c02005a8 <main>
+c020000c:	c0200b00 	eorgt	r0, r0, r0, lsl #22
+
+c0200010 <I2C_read>:
+I2C_read():
+/cygdrive/d/Robotics/Workspace/RobotVisionExp/vcmx212-i2c/main.c:27
+#define CMD_SERVO		11
+#define CMD_ADC			30
+
+int I2C_read(UCHAR address, UCHAR reg, UCHAR *buf, int len)
+{
+c0200010:	e1a0c00d 	mov	ip, sp
+c0200014:	e92dd800 	stmdb	sp!, {fp, ip, lr, pc}
+c0200018:	e24cb004 	sub	fp, ip, #4	; 0x4
+c020001c:	e24dd010 	sub	sp, sp, #16	; 0x10
+c0200020:	e50b2014 	str	r2, [fp, #-20]
+c0200024:	e50b3018 	str	r3, [fp, #-24]
+c0200028:	e1a03000 	mov	r3, r0
+c020002c:	e54b300d 	strb	r3, [fp, #-13]
+c0200030:	e1a03001 	mov	r3, r1
+c0200034:	e54b300e 	strb	r3, [fp, #-14]
+/cygdrive/d/Robotics/Workspace/RobotVisionExp/vcmx212-i2c/main.c:31
+	UINT i;
+	
+	//send device  address
+	I2C_I2CR=0xb0;
+c0200038:	e3a03a12 	mov	r3, #73728	; 0x12000
+c020003c:	e2833281 	add	r3, r3, #268435464	; 0x10000008
+c0200040:	e3a020b0 	mov	r2, #176	; 0xb0
+c0200044:	e5832000 	str	r2, [r3]
+/cygdrive/d/Robotics/Workspace/RobotVisionExp/vcmx212-i2c/main.c:32
+	I2C_I2DR=address;	
+c0200048:	e3a03201 	mov	r3, #268435456	; 0x10000000
+c020004c:	e2833a12 	add	r3, r3, #73728	; 0x12000
+c0200050:	e2833010 	add	r3, r3, #16	; 0x10
+c0200054:	e55b200d 	ldrb	r2, [fp, #-13]
+c0200058:	e5832000 	str	r2, [r3]
+/cygdrive/d/Robotics/Workspace/RobotVisionExp/vcmx212-i2c/main.c:33
+	I2C_I2SR=0x00;
+c020005c:	e3a03a12 	mov	r3, #73728	; 0x12000
+c0200060:	e28332c1 	add	r3, r3, #268435468	; 0x1000000c
+c0200064:	e3a02000 	mov	r2, #0	; 0x0
+c0200068:	e5832000 	str	r2, [r3]
+/cygdrive/d/Robotics/Workspace/RobotVisionExp/vcmx212-i2c/main.c:34
+	while((I2C_I2SR & 0x2)==0);
+c020006c:	e3a03a12 	mov	r3, #73728	; 0x12000
+c0200070:	e28332c1 	add	r3, r3, #268435468	; 0x1000000c
+c0200074:	e5933000 	ldr	r3, [r3]
+c0200078:	e1a030a3 	mov	r3, r3, lsr #1
+c020007c:	e2233001 	eor	r3, r3, #1	; 0x1
+c0200080:	e2033001 	and	r3, r3, #1	; 0x1
+c0200084:	e3530000 	cmp	r3, #0	; 0x0
+c0200088:	0a000000 	beq	c0200090 <I2C_read+0x80>
+c020008c:	eafffff6 	b	c020006c <I2C_read+0x5c>
+/cygdrive/d/Robotics/Workspace/RobotVisionExp/vcmx212-i2c/main.c:37
+	
+	//send register address
+	I2C_I2DR=reg;
+c0200090:	e3a03201 	mov	r3, #268435456	; 0x10000000
+c0200094:	e2833a12 	add	r3, r3, #73728	; 0x12000
+c0200098:	e2833010 	add	r3, r3, #16	; 0x10
+c020009c:	e55b200e 	ldrb	r2, [fp, #-14]
+c02000a0:	e5832000 	str	r2, [r3]
+/cygdrive/d/Robotics/Workspace/RobotVisionExp/vcmx212-i2c/main.c:38
+	I2C_I2SR=0x00;
+c02000a4:	e3a03a12 	mov	r3, #73728	; 0x12000
+c02000a8:	e28332c1 	add	r3, r3, #268435468	; 0x1000000c
+c02000ac:	e3a02000 	mov	r2, #0	; 0x0
+c02000b0:	e5832000 	str	r2, [r3]
+/cygdrive/d/Robotics/Workspace/RobotVisionExp/vcmx212-i2c/main.c:39
+	while((I2C_I2SR & 0x2)==0);
+c02000b4:	e3a03a12 	mov	r3, #73728	; 0x12000
+c02000b8:	e28332c1 	add	r3, r3, #268435468	; 0x1000000c
+c02000bc:	e5933000 	ldr	r3, [r3]
+c02000c0:	e1a030a3 	mov	r3, r3, lsr #1
+c02000c4:	e2233001 	eor	r3, r3, #1	; 0x1
+c02000c8:	e2033001 	and	r3, r3, #1	; 0x1
+c02000cc:	e3530000 	cmp	r3, #0	; 0x0
+c02000d0:	0a000000 	beq	c02000d8 <I2C_read+0xc8>
+c02000d4:	eafffff6 	b	c02000b4 <I2C_read+0xa4>
+/cygdrive/d/Robotics/Workspace/RobotVisionExp/vcmx212-i2c/main.c:49
+	
+	/*//send repeat start
+	I2C_I2CR=0xa4;	
+	I2C_I2SR=0x00;
+	i=I2C_I2DR;
+	while((I2C_I2SR & 0x2)==0);
+	*/
+	
+	//send device address with read enable
+	I2C_I2CR=0xb4;
+c02000d8:	e3a03a12 	mov	r3, #73728	; 0x12000
+c02000dc:	e2833281 	add	r3, r3, #268435464	; 0x10000008
+c02000e0:	e3a020b4 	mov	r2, #180	; 0xb4
+c02000e4:	e5832000 	str	r2, [r3]
+/cygdrive/d/Robotics/Workspace/RobotVisionExp/vcmx212-i2c/main.c:50
+	I2C_I2DR=address | 0x01;
+c02000e8:	e3a03201 	mov	r3, #268435456	; 0x10000000
+c02000ec:	e2833a12 	add	r3, r3, #73728	; 0x12000
+c02000f0:	e2833010 	add	r3, r3, #16	; 0x10
+c02000f4:	e55b200d 	ldrb	r2, [fp, #-13]
+c02000f8:	e3822001 	orr	r2, r2, #1	; 0x1
+c02000fc:	e20220ff 	and	r2, r2, #255	; 0xff
+c0200100:	e5832000 	str	r2, [r3]
+/cygdrive/d/Robotics/Workspace/RobotVisionExp/vcmx212-i2c/main.c:51
+	I2C_I2SR=0x00;
+c0200104:	e3a03a12 	mov	r3, #73728	; 0x12000
+c0200108:	e28332c1 	add	r3, r3, #268435468	; 0x1000000c
+c020010c:	e3a02000 	mov	r2, #0	; 0x0
+c0200110:	e5832000 	str	r2, [r3]
+/cygdrive/d/Robotics/Workspace/RobotVisionExp/vcmx212-i2c/main.c:52
+	while((I2C_I2SR & 0x2)==0);
+c0200114:	e3a03a12 	mov	r3, #73728	; 0x12000
+c0200118:	e28332c1 	add	r3, r3, #268435468	; 0x1000000c
+c020011c:	e5933000 	ldr	r3, [r3]
+c0200120:	e1a030a3 	mov	r3, r3, lsr #1
+c0200124:	e2233001 	eor	r3, r3, #1	; 0x1
+c0200128:	e2033001 	and	r3, r3, #1	; 0x1
+c020012c:	e3530000 	cmp	r3, #0	; 0x0
+c0200130:	0a000000 	beq	c0200138 <I2C_read+0x128>
+c0200134:	eafffff6 	b	c0200114 <I2C_read+0x104>
+/cygdrive/d/Robotics/Workspace/RobotVisionExp/vcmx212-i2c/main.c:55
+	
+	//read the incoming word
+	if(len==1)
+c0200138:	e51b3018 	ldr	r3, [fp, #-24]
+c020013c:	e3530001 	cmp	r3, #1	; 0x1
+c0200140:	1a000020 	bne	c02001c8 <I2C_read+0x1b8>
+/cygdrive/d/Robotics/Workspace/RobotVisionExp/vcmx212-i2c/main.c:57
+	{
+		I2C_I2CR=0xa8;
+c0200144:	e3a03a12 	mov	r3, #73728	; 0x12000
+c0200148:	e2833281 	add	r3, r3, #268435464	; 0x10000008
+c020014c:	e3a020a8 	mov	r2, #168	; 0xa8
+c0200150:	e5832000 	str	r2, [r3]
+/cygdrive/d/Robotics/Workspace/RobotVisionExp/vcmx212-i2c/main.c:58
+		i=I2C_I2DR;		//garbage read from last write
+c0200154:	e3a03201 	mov	r3, #268435456	; 0x10000000
+c0200158:	e2833a12 	add	r3, r3, #73728	; 0x12000
+c020015c:	e2833010 	add	r3, r3, #16	; 0x10
+c0200160:	e5933000 	ldr	r3, [r3]
+c0200164:	e50b301c 	str	r3, [fp, #-28]
+/cygdrive/d/Robotics/Workspace/RobotVisionExp/vcmx212-i2c/main.c:59
+		I2C_I2SR=0x00;
+c0200168:	e3a03a12 	mov	r3, #73728	; 0x12000
+c020016c:	e28332c1 	add	r3, r3, #268435468	; 0x1000000c
+c0200170:	e3a02000 	mov	r2, #0	; 0x0
+c0200174:	e5832000 	str	r2, [r3]
+/cygdrive/d/Robotics/Workspace/RobotVisionExp/vcmx212-i2c/main.c:60
+		while((I2C_I2SR & 0x2)==0);
+c0200178:	e3a03a12 	mov	r3, #73728	; 0x12000
+c020017c:	e28332c1 	add	r3, r3, #268435468	; 0x1000000c
+c0200180:	e5933000 	ldr	r3, [r3]
+c0200184:	e1a030a3 	mov	r3, r3, lsr #1
+c0200188:	e2233001 	eor	r3, r3, #1	; 0x1
+c020018c:	e2033001 	and	r3, r3, #1	; 0x1
+c0200190:	e3530000 	cmp	r3, #0	; 0x0
+c0200194:	0a000000 	beq	c020019c <I2C_read+0x18c>
+c0200198:	eafffff6 	b	c0200178 <I2C_read+0x168>
+/cygdrive/d/Robotics/Workspace/RobotVisionExp/vcmx212-i2c/main.c:62
+		
+		I2C_I2CR=0x80;	//send stop
+c020019c:	e3a03a12 	mov	r3, #73728	; 0x12000
+c02001a0:	e2833281 	add	r3, r3, #268435464	; 0x10000008
+c02001a4:	e3a02080 	mov	r2, #128	; 0x80
+c02001a8:	e5832000 	str	r2, [r3]
+/cygdrive/d/Robotics/Workspace/RobotVisionExp/vcmx212-i2c/main.c:64
+		
+		buf[0]=I2C_I2DR;	//read last char
+c02001ac:	e51b2014 	ldr	r2, [fp, #-20]
+c02001b0:	e3a03201 	mov	r3, #268435456	; 0x10000000
+c02001b4:	e2833a12 	add	r3, r3, #73728	; 0x12000
+c02001b8:	e2833010 	add	r3, r3, #16	; 0x10
+c02001bc:	e5933000 	ldr	r3, [r3]
+c02001c0:	e5c23000 	strb	r3, [r2]
+c02001c4:	ea000047 	b	c02002e8 <I2C_read+0x2d8>
+/cygdrive/d/Robotics/Workspace/RobotVisionExp/vcmx212-i2c/main.c:68
+	}
+	else
+	{
+		I2C_I2CR=0xa0;
+c02001c8:	e3a03a12 	mov	r3, #73728	; 0x12000
+c02001cc:	e2833281 	add	r3, r3, #268435464	; 0x10000008
+c02001d0:	e3a020a0 	mov	r2, #160	; 0xa0
+c02001d4:	e5832000 	str	r2, [r3]
+/cygdrive/d/Robotics/Workspace/RobotVisionExp/vcmx212-i2c/main.c:69
+		i=I2C_I2DR;		//garbage read from last write
+c02001d8:	e3a03201 	mov	r3, #268435456	; 0x10000000
+c02001dc:	e2833a12 	add	r3, r3, #73728	; 0x12000
+c02001e0:	e2833010 	add	r3, r3, #16	; 0x10
+c02001e4:	e5933000 	ldr	r3, [r3]
+c02001e8:	e50b301c 	str	r3, [fp, #-28]
+/cygdrive/d/Robotics/Workspace/RobotVisionExp/vcmx212-i2c/main.c:71
+	
+		for(i=0;i<len;i++)
+c02001ec:	e3a03000 	mov	r3, #0	; 0x0
+c02001f0:	e50b301c 	str	r3, [fp, #-28]
+c02001f4:	e51b2018 	ldr	r2, [fp, #-24]
+c02001f8:	e51b301c 	ldr	r3, [fp, #-28]
+c02001fc:	e1520003 	cmp	r2, r3
+c0200200:	9a00002a 	bls	c02002b0 <I2C_read+0x2a0>
+/cygdrive/d/Robotics/Workspace/RobotVisionExp/vcmx212-i2c/main.c:73
+		{
+			I2C_I2SR=0x00;
+c0200204:	e3a03a12 	mov	r3, #73728	; 0x12000
+c0200208:	e28332c1 	add	r3, r3, #268435468	; 0x1000000c
+c020020c:	e3a02000 	mov	r2, #0	; 0x0
+c0200210:	e5832000 	str	r2, [r3]
+/cygdrive/d/Robotics/Workspace/RobotVisionExp/vcmx212-i2c/main.c:74
+			while((I2C_I2SR & 0x2)==0);
+c0200214:	e3a03a12 	mov	r3, #73728	; 0x12000
+c0200218:	e28332c1 	add	r3, r3, #268435468	; 0x1000000c
+c020021c:	e5933000 	ldr	r3, [r3]
+c0200220:	e1a030a3 	mov	r3, r3, lsr #1
+c0200224:	e2233001 	eor	r3, r3, #1	; 0x1
+c0200228:	e2033001 	and	r3, r3, #1	; 0x1
+c020022c:	e3530000 	cmp	r3, #0	; 0x0
+c0200230:	0a000000 	beq	c0200238 <I2C_read+0x228>
+c0200234:	eafffff6 	b	c0200214 <I2C_read+0x204>
+/cygdrive/d/Robotics/Workspace/RobotVisionExp/vcmx212-i2c/main.c:75
+			I2C_I2SR=0x00;
+c0200238:	e3a03a12 	mov	r3, #73728	; 0x12000
+c020023c:	e28332c1 	add	r3, r3, #268435468	; 0x1000000c
+c0200240:	e3a02000 	mov	r2, #0	; 0x0
+c0200244:	e5832000 	str	r2, [r3]
+/cygdrive/d/Robotics/Workspace/RobotVisionExp/vcmx212-i2c/main.c:77
+			
+			if(i==len-2)
+c0200248:	e51b3018 	ldr	r3, [fp, #-24]
+c020024c:	e2432002 	sub	r2, r3, #2	; 0x2
+c0200250:	e51b301c 	ldr	r3, [fp, #-28]
+c0200254:	e1520003 	cmp	r2, r3
+c0200258:	1a000003 	bne	c020026c <I2C_read+0x25c>
+/cygdrive/d/Robotics/Workspace/RobotVisionExp/vcmx212-i2c/main.c:78
+				I2C_I2CR=0xa8;
+c020025c:	e3a03a12 	mov	r3, #73728	; 0x12000
+c0200260:	e2833281 	add	r3, r3, #268435464	; 0x10000008
+c0200264:	e3a020a8 	mov	r2, #168	; 0xa8
+c0200268:	e5832000 	str	r2, [r3]
+/cygdrive/d/Robotics/Workspace/RobotVisionExp/vcmx212-i2c/main.c:79
+			if(i<len-1)
+c020026c:	e51b3018 	ldr	r3, [fp, #-24]
+c0200270:	e2432001 	sub	r2, r3, #1	; 0x1
+c0200274:	e51b301c 	ldr	r3, [fp, #-28]
+c0200278:	e1520003 	cmp	r2, r3
+c020027c:	9a000007 	bls	c02002a0 <I2C_read+0x290>
+/cygdrive/d/Robotics/Workspace/RobotVisionExp/vcmx212-i2c/main.c:80
+				buf[i]=I2C_I2DR;	
+c0200280:	e51b2014 	ldr	r2, [fp, #-20]
+c0200284:	e51b301c 	ldr	r3, [fp, #-28]
+c0200288:	e0822003 	add	r2, r2, r3
+c020028c:	e3a03201 	mov	r3, #268435456	; 0x10000000
+c0200290:	e2833a12 	add	r3, r3, #73728	; 0x12000
+c0200294:	e2833010 	add	r3, r3, #16	; 0x10
+c0200298:	e5933000 	ldr	r3, [r3]
+c020029c:	e5c23000 	strb	r3, [r2]
+/cygdrive/d/Robotics/Workspace/RobotVisionExp/vcmx212-i2c/main.c:71
+c02002a0:	e51b301c 	ldr	r3, [fp, #-28]
+c02002a4:	e2833001 	add	r3, r3, #1	; 0x1
+c02002a8:	e50b301c 	str	r3, [fp, #-28]
+c02002ac:	eaffffd0 	b	c02001f4 <I2C_read+0x1e4>
+/cygdrive/d/Robotics/Workspace/RobotVisionExp/vcmx212-i2c/main.c:84
+		}
+	
+		//send stop
+		I2C_I2CR=0x80;	
+c02002b0:	e3a03a12 	mov	r3, #73728	; 0x12000
+c02002b4:	e2833281 	add	r3, r3, #268435464	; 0x10000008
+c02002b8:	e3a02080 	mov	r2, #128	; 0x80
+c02002bc:	e5832000 	str	r2, [r3]
+/cygdrive/d/Robotics/Workspace/RobotVisionExp/vcmx212-i2c/main.c:87
+		
+		//read last char
+		buf[i-1]=I2C_I2DR;
+c02002c0:	e3e01000 	mvn	r1, #0	; 0x0
+c02002c4:	e51b2014 	ldr	r2, [fp, #-20]
+c02002c8:	e51b301c 	ldr	r3, [fp, #-28]
+c02002cc:	e0823003 	add	r3, r2, r3
+c02002d0:	e0832001 	add	r2, r3, r1
+c02002d4:	e3a03201 	mov	r3, #268435456	; 0x10000000
+c02002d8:	e2833a12 	add	r3, r3, #73728	; 0x12000
+c02002dc:	e2833010 	add	r3, r3, #16	; 0x10
+c02002e0:	e5933000 	ldr	r3, [r3]
+c02002e4:	e5c23000 	strb	r3, [r2]
+/cygdrive/d/Robotics/Workspace/RobotVisionExp/vcmx212-i2c/main.c:90
+	}
+	//return the data read
+	return len;
+c02002e8:	e51b3018 	ldr	r3, [fp, #-24]
+/cygdrive/d/Robotics/Workspace/RobotVisionExp/vcmx212-i2c/main.c:91
+}
+c02002ec:	e1a00003 	mov	r0, r3
+c02002f0:	e24bd00c 	sub	sp, fp, #12	; 0xc
+c02002f4:	e89da800 	ldmia	sp, {fp, sp, pc}
+
+c02002f8 <I2C_write>:
+I2C_write():
+/cygdrive/d/Robotics/Workspace/RobotVisionExp/vcmx212-i2c/main.c:94
+
+void I2C_write(UCHAR address, UCHAR* buf, int len)
+{
+c02002f8:	e1a0c00d 	mov	ip, sp
+c02002fc:	e92dd800 	stmdb	sp!, {fp, ip, lr, pc}
+c0200300:	e24cb004 	sub	fp, ip, #4	; 0x4
+c0200304:	e24dd014 	sub	sp, sp, #20	; 0x14
+c0200308:	e1a03000 	mov	r3, r0
+c020030c:	e50b1014 	str	r1, [fp, #-20]
+c0200310:	e50b2018 	str	r2, [fp, #-24]
+c0200314:	e54b300d 	strb	r3, [fp, #-13]
+/cygdrive/d/Robotics/Workspace/RobotVisionExp/vcmx212-i2c/main.c:96
+	int i,cnt;
+	I2C_I2CR=0xb0;
+c0200318:	e3a03a12 	mov	r3, #73728	; 0x12000
+c020031c:	e2833281 	add	r3, r3, #268435464	; 0x10000008
+c0200320:	e3a020b0 	mov	r2, #176	; 0xb0
+c0200324:	e5832000 	str	r2, [r3]
+/cygdrive/d/Robotics/Workspace/RobotVisionExp/vcmx212-i2c/main.c:97
+	I2C_I2DR=address;	//send sensor address
+c0200328:	e3a03201 	mov	r3, #268435456	; 0x10000000
+c020032c:	e2833a12 	add	r3, r3, #73728	; 0x12000
+c0200330:	e2833010 	add	r3, r3, #16	; 0x10
+c0200334:	e55b200d 	ldrb	r2, [fp, #-13]
+c0200338:	e5832000 	str	r2, [r3]
+/cygdrive/d/Robotics/Workspace/RobotVisionExp/vcmx212-i2c/main.c:98
+	I2C_I2SR=0x00;
+c020033c:	e3a03a12 	mov	r3, #73728	; 0x12000
+c0200340:	e28332c1 	add	r3, r3, #268435468	; 0x1000000c
+c0200344:	e3a02000 	mov	r2, #0	; 0x0
+c0200348:	e5832000 	str	r2, [r3]
+/cygdrive/d/Robotics/Workspace/RobotVisionExp/vcmx212-i2c/main.c:100
+	
+	cnt=0;
+c020034c:	e3a03000 	mov	r3, #0	; 0x0
+c0200350:	e50b3020 	str	r3, [fp, #-32]
+/cygdrive/d/Robotics/Workspace/RobotVisionExp/vcmx212-i2c/main.c:101
+	while(((I2C_I2SR & 0x2)==0) && (++cnt<I2C_TIMEOUT));
+c0200354:	e3a03a12 	mov	r3, #73728	; 0x12000
+c0200358:	e28332c1 	add	r3, r3, #268435468	; 0x1000000c
+c020035c:	e5933000 	ldr	r3, [r3]
+c0200360:	e1a030a3 	mov	r3, r3, lsr #1
+c0200364:	e2233001 	eor	r3, r3, #1	; 0x1
+c0200368:	e2033001 	and	r3, r3, #1	; 0x1
+c020036c:	e3530000 	cmp	r3, #0	; 0x0
+c0200370:	0a000009 	beq	c020039c <I2C_write+0xa4>
+c0200374:	e51b3020 	ldr	r3, [fp, #-32]
+c0200378:	e2833001 	add	r3, r3, #1	; 0x1
+c020037c:	e1a02003 	mov	r2, r3
+c0200380:	e50b2020 	str	r2, [fp, #-32]
+c0200384:	e3a03b61 	mov	r3, #99328	; 0x18400
+c0200388:	e2833fa7 	add	r3, r3, #668	; 0x29c
+c020038c:	e2833003 	add	r3, r3, #3	; 0x3
+c0200390:	e1520003 	cmp	r2, r3
+c0200394:	ca000000 	bgt	c020039c <I2C_write+0xa4>
+c0200398:	eaffffed 	b	c0200354 <I2C_write+0x5c>
+/cygdrive/d/Robotics/Workspace/RobotVisionExp/vcmx212-i2c/main.c:103
+	
+	for(i=0;i<len;i++)
+c020039c:	e3a03000 	mov	r3, #0	; 0x0
+c02003a0:	e50b301c 	str	r3, [fp, #-28]
+c02003a4:	e51b201c 	ldr	r2, [fp, #-28]
+c02003a8:	e51b3018 	ldr	r3, [fp, #-24]
+c02003ac:	e1520003 	cmp	r2, r3
+c02003b0:	aa000023 	bge	c0200444 <I2C_write+0x14c>
+/cygdrive/d/Robotics/Workspace/RobotVisionExp/vcmx212-i2c/main.c:105
+	{
+		I2C_I2DR=buf[i];	//send sensor value
+c02003b4:	e3a02201 	mov	r2, #268435456	; 0x10000000
+c02003b8:	e2822a12 	add	r2, r2, #73728	; 0x12000
+c02003bc:	e2822010 	add	r2, r2, #16	; 0x10
+c02003c0:	e51b1014 	ldr	r1, [fp, #-20]
+c02003c4:	e51b301c 	ldr	r3, [fp, #-28]
+c02003c8:	e0813003 	add	r3, r1, r3
+c02003cc:	e5d33000 	ldrb	r3, [r3]
+c02003d0:	e5823000 	str	r3, [r2]
+/cygdrive/d/Robotics/Workspace/RobotVisionExp/vcmx212-i2c/main.c:106
+		I2C_I2SR=0x00;
+c02003d4:	e3a03a12 	mov	r3, #73728	; 0x12000
+c02003d8:	e28332c1 	add	r3, r3, #268435468	; 0x1000000c
+c02003dc:	e3a02000 	mov	r2, #0	; 0x0
+c02003e0:	e5832000 	str	r2, [r3]
+/cygdrive/d/Robotics/Workspace/RobotVisionExp/vcmx212-i2c/main.c:107
+		cnt=0;
+c02003e4:	e3a03000 	mov	r3, #0	; 0x0
+c02003e8:	e50b3020 	str	r3, [fp, #-32]
+/cygdrive/d/Robotics/Workspace/RobotVisionExp/vcmx212-i2c/main.c:108
+		while(((I2C_I2SR & 0x2)==0) && (++cnt<I2C_TIMEOUT));
+c02003ec:	e3a03a12 	mov	r3, #73728	; 0x12000
+c02003f0:	e28332c1 	add	r3, r3, #268435468	; 0x1000000c
+c02003f4:	e5933000 	ldr	r3, [r3]
+c02003f8:	e1a030a3 	mov	r3, r3, lsr #1
+c02003fc:	e2233001 	eor	r3, r3, #1	; 0x1
+c0200400:	e2033001 	and	r3, r3, #1	; 0x1
+c0200404:	e3530000 	cmp	r3, #0	; 0x0
+c0200408:	0a000009 	beq	c0200434 <I2C_write+0x13c>
+c020040c:	e51b3020 	ldr	r3, [fp, #-32]
+c0200410:	e2833001 	add	r3, r3, #1	; 0x1
+c0200414:	e1a02003 	mov	r2, r3
+c0200418:	e50b2020 	str	r2, [fp, #-32]
+c020041c:	e3a03b61 	mov	r3, #99328	; 0x18400
+c0200420:	e2833fa7 	add	r3, r3, #668	; 0x29c
+c0200424:	e2833003 	add	r3, r3, #3	; 0x3
+c0200428:	e1520003 	cmp	r2, r3
+c020042c:	ca000000 	bgt	c0200434 <I2C_write+0x13c>
+c0200430:	eaffffed 	b	c02003ec <I2C_write+0xf4>
+/cygdrive/d/Robotics/Workspace/RobotVisionExp/vcmx212-i2c/main.c:103
+c0200434:	e51b301c 	ldr	r3, [fp, #-28]
+c0200438:	e2833001 	add	r3, r3, #1	; 0x1
+c020043c:	e50b301c 	str	r3, [fp, #-28]
+c0200440:	eaffffd7 	b	c02003a4 <I2C_write+0xac>
+/cygdrive/d/Robotics/Workspace/RobotVisionExp/vcmx212-i2c/main.c:111
+	}
+	
+	I2C_I2CR=0x80;	//send stop
+c0200444:	e3a03a12 	mov	r3, #73728	; 0x12000
+c0200448:	e2833281 	add	r3, r3, #268435464	; 0x10000008
+c020044c:	e3a02080 	mov	r2, #128	; 0x80
+c0200450:	e5832000 	str	r2, [r3]
+/cygdrive/d/Robotics/Workspace/RobotVisionExp/vcmx212-i2c/main.c:112
+	for(i=0;i<10000;i++);
+c0200454:	e3a03000 	mov	r3, #0	; 0x0
+c0200458:	e50b301c 	str	r3, [fp, #-28]
+c020045c:	e51b201c 	ldr	r2, [fp, #-28]
+c0200460:	e3a03c27 	mov	r3, #9984	; 0x2700
+c0200464:	e283300f 	add	r3, r3, #15	; 0xf
+c0200468:	e1520003 	cmp	r2, r3
+c020046c:	ca000003 	bgt	c0200480 <I2C_write+0x188>
+c0200470:	e51b301c 	ldr	r3, [fp, #-28]
+c0200474:	e2833001 	add	r3, r3, #1	; 0x1
+c0200478:	e50b301c 	str	r3, [fp, #-28]
+c020047c:	eafffff6 	b	c020045c <I2C_write+0x164>
+/cygdrive/d/Robotics/Workspace/RobotVisionExp/vcmx212-i2c/main.c:113
+}
+c0200480:	e24bd00c 	sub	sp, fp, #12	; 0xc
+c0200484:	e89da800 	ldmia	sp, {fp, sp, pc}
+
+c0200488 <SendCh>:
+SendCh():
+/cygdrive/d/Robotics/Workspace/RobotVisionExp/vcmx212-i2c/main.c:116
+
+void SendCh(UCHAR uc)
+{
+c0200488:	e1a0c00d 	mov	ip, sp
+c020048c:	e92dd800 	stmdb	sp!, {fp, ip, lr, pc}
+c0200490:	e24cb004 	sub	fp, ip, #4	; 0x4
+c0200494:	e24dd004 	sub	sp, sp, #4	; 0x4
+c0200498:	e1a03000 	mov	r3, r0
+c020049c:	e54b300d 	strb	r3, [fp, #-13]
+/cygdrive/d/Robotics/Workspace/RobotVisionExp/vcmx212-i2c/main.c:117
+	while((UART1_USR2 & 0x4000)==0);
+c02004a0:	e3a03201 	mov	r3, #268435456	; 0x10000000
+c02004a4:	e2833a0a 	add	r3, r3, #40960	; 0xa000
+c02004a8:	e2833098 	add	r3, r3, #152	; 0x98
+c02004ac:	e5933000 	ldr	r3, [r3]
+c02004b0:	e1a03723 	mov	r3, r3, lsr #14
+c02004b4:	e2233001 	eor	r3, r3, #1	; 0x1
+c02004b8:	e2033001 	and	r3, r3, #1	; 0x1
+c02004bc:	e3530000 	cmp	r3, #0	; 0x0
+c02004c0:	0a000000 	beq	c02004c8 <SendCh+0x40>
+c02004c4:	eafffff5 	b	c02004a0 <SendCh+0x18>
+/cygdrive/d/Robotics/Workspace/RobotVisionExp/vcmx212-i2c/main.c:118
+	UART1_UTXD=uc;
+c02004c8:	e3a03a0a 	mov	r3, #40960	; 0xa000
+c02004cc:	e2833040 	add	r3, r3, #64	; 0x40
+c02004d0:	e1833b03 	orr	r3, r3, r3, lsl #22
+c02004d4:	e55b200d 	ldrb	r2, [fp, #-13]
+c02004d8:	e5832000 	str	r2, [r3]
+/cygdrive/d/Robotics/Workspace/RobotVisionExp/vcmx212-i2c/main.c:120
+			
+}
+c02004dc:	e89da808 	ldmia	sp, {r3, fp, sp, pc}
+
+c02004e0 <SendSerial>:
+SendSerial():
+/cygdrive/d/Robotics/Workspace/RobotVisionExp/vcmx212-i2c/main.c:123
+
+void SendSerial(UCHAR *buf, int len)
+{
+c02004e0:	e1a0c00d 	mov	ip, sp
+c02004e4:	e92dd800 	stmdb	sp!, {fp, ip, lr, pc}
+c02004e8:	e24cb004 	sub	fp, ip, #4	; 0x4
+c02004ec:	e24dd010 	sub	sp, sp, #16	; 0x10
+c02004f0:	e50b0010 	str	r0, [fp, #-16]
+c02004f4:	e50b1014 	str	r1, [fp, #-20]
+/cygdrive/d/Robotics/Workspace/RobotVisionExp/vcmx212-i2c/main.c:125
+	int i;
+	SendCh(FEND);
+c02004f8:	e3a000c0 	mov	r0, #192	; 0xc0
+c02004fc:	ebffffe1 	bl	c0200488 <SendCh>
+/cygdrive/d/Robotics/Workspace/RobotVisionExp/vcmx212-i2c/main.c:126
+	for(i=0;i<len;i++)
+c0200500:	e3a03000 	mov	r3, #0	; 0x0
+c0200504:	e50b3018 	str	r3, [fp, #-24]
+c0200508:	e51b2018 	ldr	r2, [fp, #-24]
+c020050c:	e51b3014 	ldr	r3, [fp, #-20]
+c0200510:	e1520003 	cmp	r2, r3
+c0200514:	aa00001f 	bge	c0200598 <SendSerial+0xb8>
+/cygdrive/d/Robotics/Workspace/RobotVisionExp/vcmx212-i2c/main.c:128
+	{
+		switch(buf[i])
+c0200518:	e51b3010 	ldr	r3, [fp, #-16]
+c020051c:	e51b2018 	ldr	r2, [fp, #-24]
+c0200520:	e0833002 	add	r3, r3, r2
+c0200524:	e5d33000 	ldrb	r3, [r3]
+c0200528:	e50b301c 	str	r3, [fp, #-28]
+c020052c:	e51b301c 	ldr	r3, [fp, #-28]
+c0200530:	e35300c0 	cmp	r3, #192	; 0xc0
+c0200534:	0a000003 	beq	c0200548 <SendSerial+0x68>
+c0200538:	e51b301c 	ldr	r3, [fp, #-28]
+c020053c:	e35300db 	cmp	r3, #219	; 0xdb
+c0200540:	0a000005 	beq	c020055c <SendSerial+0x7c>
+c0200544:	ea000009 	b	c0200570 <SendSerial+0x90>
+/cygdrive/d/Robotics/Workspace/RobotVisionExp/vcmx212-i2c/main.c:131
+		{
+		case FEND:
+            SendCh(FESC);
+c0200548:	e3a000db 	mov	r0, #219	; 0xdb
+c020054c:	ebffffcd 	bl	c0200488 <SendCh>
+/cygdrive/d/Robotics/Workspace/RobotVisionExp/vcmx212-i2c/main.c:132
+			SendCh(TFEND);
+c0200550:	e3a000dc 	mov	r0, #220	; 0xdc
+c0200554:	ebffffcb 	bl	c0200488 <SendCh>
+/cygdrive/d/Robotics/Workspace/RobotVisionExp/vcmx212-i2c/main.c:133
+			break;
+c0200558:	ea00000a 	b	c0200588 <SendSerial+0xa8>
+/cygdrive/d/Robotics/Workspace/RobotVisionExp/vcmx212-i2c/main.c:135
+		case FESC:
+            SendCh(FESC);
+c020055c:	e3a000db 	mov	r0, #219	; 0xdb
+c0200560:	ebffffc8 	bl	c0200488 <SendCh>
+/cygdrive/d/Robotics/Workspace/RobotVisionExp/vcmx212-i2c/main.c:136
+			SendCh(TFESC);
+c0200564:	e3a000dd 	mov	r0, #221	; 0xdd
+c0200568:	ebffffc6 	bl	c0200488 <SendCh>
+/cygdrive/d/Robotics/Workspace/RobotVisionExp/vcmx212-i2c/main.c:137
+			break;
+c020056c:	ea000005 	b	c0200588 <SendSerial+0xa8>
+/cygdrive/d/Robotics/Workspace/RobotVisionExp/vcmx212-i2c/main.c:139
+		default:
+			SendCh(buf[i]);
+c0200570:	e51b2010 	ldr	r2, [fp, #-16]
+c0200574:	e51b3018 	ldr	r3, [fp, #-24]
+c0200578:	e0823003 	add	r3, r2, r3
+c020057c:	e5d33000 	ldrb	r3, [r3]
+c0200580:	e1a00003 	mov	r0, r3
+c0200584:	ebffffbf 	bl	c0200488 <SendCh>
+/cygdrive/d/Robotics/Workspace/RobotVisionExp/vcmx212-i2c/main.c:126
+c0200588:	e51b3018 	ldr	r3, [fp, #-24]
+c020058c:	e2833001 	add	r3, r3, #1	; 0x1
+c0200590:	e50b3018 	str	r3, [fp, #-24]
+c0200594:	eaffffdb 	b	c0200508 <SendSerial+0x28>
+/cygdrive/d/Robotics/Workspace/RobotVisionExp/vcmx212-i2c/main.c:142
+		}
+	}
+	SendCh(FEND);
+c0200598:	e3a000c0 	mov	r0, #192	; 0xc0
+c020059c:	ebffffb9 	bl	c0200488 <SendCh>
+/cygdrive/d/Robotics/Workspace/RobotVisionExp/vcmx212-i2c/main.c:143
+}
+c02005a0:	e24bd00c 	sub	sp, fp, #12	; 0xc
+c02005a4:	e89da800 	ldmia	sp, {fp, sp, pc}
+
+c02005a8 <main>:
+main():
+/cygdrive/d/Robotics/Workspace/RobotVisionExp/vcmx212-i2c/main.c:146
+
+int main ()
+{
+c02005a8:	e1a0c00d 	mov	ip, sp
+c02005ac:	e92dd800 	stmdb	sp!, {fp, ip, lr, pc}
+c02005b0:	e24cb004 	sub	fp, ip, #4	; 0x4
+c02005b4:	e24dd094 	sub	sp, sp, #148	; 0x94
+/cygdrive/d/Robotics/Workspace/RobotVisionExp/vcmx212-i2c/main.c:156
+	volatile UINT i;
+	UCHAR cmd,address,value;
+	UCHAR *pMem;
+	
+	//---------------------------------------------------------------------------------------------------------------------------------------
+	//START OF HAB TOOLKIT SECTION 
+	//THIS SECTION CAN BE REMOVED IF RUNNING PROGRAMS  USING JTAG OR UMON
+	
+	//set PLL frequency to 266MHz
+	CRM_CSCR=0x1f18060f;
+c02005b8:	e3a03201 	mov	r3, #268435456	; 0x10000000
+c02005bc:	e2833a27 	add	r3, r3, #159744	; 0x27000
+c02005c0:	e59f242c 	ldr	r2, [pc, #1068]	; c02009f4 <.text+0x9f4>
+c02005c4:	e5832000 	str	r2, [r3]
+/cygdrive/d/Robotics/Workspace/RobotVisionExp/vcmx212-i2c/main.c:157
+	CRM_MPCTL0=0x007b1c73;
+c02005c8:	e3a02a27 	mov	r2, #159744	; 0x27000
+c02005cc:	e2822241 	add	r2, r2, #268435460	; 0x10000004
+c02005d0:	e3a0387b 	mov	r3, #8060928	; 0x7b0000
+c02005d4:	e2833d71 	add	r3, r3, #7232	; 0x1c40
+c02005d8:	e2833033 	add	r3, r3, #51	; 0x33
+c02005dc:	e5823000 	str	r3, [r2]
+/cygdrive/d/Robotics/Workspace/RobotVisionExp/vcmx212-i2c/main.c:158
+	CRM_CSCR=0x1f38060f;	//MPLL restart
+c02005e0:	e3a03201 	mov	r3, #268435456	; 0x10000000
+c02005e4:	e2833a27 	add	r3, r3, #159744	; 0x27000
+c02005e8:	e59f2408 	ldr	r2, [pc, #1032]	; c02009f8 <.text+0x9f8>
+c02005ec:	e5832000 	str	r2, [r3]
+/cygdrive/d/Robotics/Workspace/RobotVisionExp/vcmx212-i2c/main.c:159
+	while((CRM_MPCTL1 & 0x8000)==0);	//wait until PLL locked
+c02005f0:	e3a03a27 	mov	r3, #159744	; 0x27000
+c02005f4:	e2833281 	add	r3, r3, #268435464	; 0x10000008
+c02005f8:	e5933000 	ldr	r3, [r3]
+c02005fc:	e1a037a3 	mov	r3, r3, lsr #15
+c0200600:	e2233001 	eor	r3, r3, #1	; 0x1
+c0200604:	e2033001 	and	r3, r3, #1	; 0x1
+c0200608:	e3530000 	cmp	r3, #0	; 0x0
+c020060c:	0a000000 	beq	c0200614 <main+0x6c>
+c0200610:	eafffff6 	b	c02005f0 <main+0x48>
+/cygdrive/d/Robotics/Workspace/RobotVisionExp/vcmx212-i2c/main.c:162
+
+	//enable instruction cache
+	asm("   MRC p15, 0, r0, c1, c0, 0");
+c0200614:	ee110f10 	mrc	15, 0, r0, cr1, cr0, {0}
+/cygdrive/d/Robotics/Workspace/RobotVisionExp/vcmx212-i2c/main.c:163
+    asm("   ORR r0, r0, #0x1000"); //bit 12 is ICACHE enable
+c0200618:	e3800a01 	orr	r0, r0, #4096	; 0x1000
+/cygdrive/d/Robotics/Workspace/RobotVisionExp/vcmx212-i2c/main.c:164
+    asm("   MCR p15, 0, r0, c1, c0, 0");
+c020061c:	ee010f10 	mcr	15, 0, r0, cr1, cr0, {0}
+/cygdrive/d/Robotics/Workspace/RobotVisionExp/vcmx212-i2c/main.c:166
+    // Flush instruction cache 
+    asm("   MCR p15, 0, r0, c7, c5, 0");
+c0200620:	ee070f15 	mcr	15, 0, r0, cr7, cr5, {0}
+/cygdrive/d/Robotics/Workspace/RobotVisionExp/vcmx212-i2c/main.c:171
+	
+	//END OF HAB TOOLKIT SECTION
+	//---------------------------------------------------------------------------------------------------------------------------------------
+	
+	CRM_PCDR1=0x05070705;	//PERCLK clock divider settings (44.33MHz)
+c0200624:	e3a03201 	mov	r3, #268435456	; 0x10000000
+c0200628:	e2833a27 	add	r3, r3, #159744	; 0x27000
+c020062c:	e283301c 	add	r3, r3, #28	; 0x1c
+c0200630:	e59f23c4 	ldr	r2, [pc, #964]	; c02009fc <.text+0x9fc>
+c0200634:	e5832000 	str	r2, [r3]
+/cygdrive/d/Robotics/Workspace/RobotVisionExp/vcmx212-i2c/main.c:172
+	CRM_PCCR0=0xc0403801;	//enable CSI, DMA, UART1, I2C, GPIO clk
+c0200638:	e3a02201 	mov	r2, #268435456	; 0x10000000
+c020063c:	e2822a27 	add	r2, r2, #159744	; 0x27000
+c0200640:	e2822020 	add	r2, r2, #32	; 0x20
+c0200644:	e3a03107 	mov	r3, #-1073741823	; 0xc0000001
+c0200648:	e2833501 	add	r3, r3, #4194304	; 0x400000
+c020064c:	e2833b0e 	add	r3, r3, #14336	; 0x3800
+c0200650:	e5823000 	str	r3, [r2]
+/cygdrive/d/Robotics/Workspace/RobotVisionExp/vcmx212-i2c/main.c:174
+		
+	GPIOB_GIUS=0xff0003f0;	//enable CSI IO
+c0200654:	e3a02201 	mov	r2, #268435456	; 0x10000000
+c0200658:	e2822a15 	add	r2, r2, #86016	; 0x15000
+c020065c:	e2822e12 	add	r2, r2, #288	; 0x120
+c0200660:	e3a034ff 	mov	r3, #-16777216	; 0xff000000
+c0200664:	e2833e3f 	add	r3, r3, #1008	; 0x3f0
+c0200668:	e5823000 	str	r3, [r2]
+/cygdrive/d/Robotics/Workspace/RobotVisionExp/vcmx212-i2c/main.c:175
+	GPIOD_GIUS=0xfff80000;	//enable I2C IO
+c020066c:	e3a02201 	mov	r2, #268435456	; 0x10000000
+c0200670:	e2822a15 	add	r2, r2, #86016	; 0x15000
+c0200674:	e2822e32 	add	r2, r2, #800	; 0x320
+c0200678:	e3a03102 	mov	r3, #-2147483648	; 0x80000000
+c020067c:	e1a03643 	mov	r3, r3, asr #12
+c0200680:	e5823000 	str	r3, [r2]
+/cygdrive/d/Robotics/Workspace/RobotVisionExp/vcmx212-i2c/main.c:178
+		
+	//init UART1
+	GPIOE_DDIR=0x1000;
+c0200684:	e3a03201 	mov	r3, #268435456	; 0x10000000
+c0200688:	e2833b55 	add	r3, r3, #87040	; 0x15400
+c020068c:	e3a02a01 	mov	r2, #4096	; 0x1000
+c0200690:	e5832000 	str	r2, [r3]
+/cygdrive/d/Robotics/Workspace/RobotVisionExp/vcmx212-i2c/main.c:179
+	UART1_UCR1=0x0001;
+c0200694:	e3a03a0a 	mov	r3, #40960	; 0xa000
+c0200698:	e2833080 	add	r3, r3, #128	; 0x80
+c020069c:	e1833a83 	orr	r3, r3, r3, lsl #21
+c02006a0:	e3a02001 	mov	r2, #1	; 0x1
+c02006a4:	e5832000 	str	r2, [r3]
+/cygdrive/d/Robotics/Workspace/RobotVisionExp/vcmx212-i2c/main.c:180
+	UART1_UCR2=0x4027;
+c02006a8:	e3a02201 	mov	r2, #268435456	; 0x10000000
+c02006ac:	e2822a0a 	add	r2, r2, #40960	; 0xa000
+c02006b0:	e2822084 	add	r2, r2, #132	; 0x84
+c02006b4:	e3a03901 	mov	r3, #16384	; 0x4000
+c02006b8:	e2833027 	add	r3, r3, #39	; 0x27
+c02006bc:	e5823000 	str	r3, [r2]
+/cygdrive/d/Robotics/Workspace/RobotVisionExp/vcmx212-i2c/main.c:181
+	UART1_UCR3=0x0004;
+c02006c0:	e3a03201 	mov	r3, #268435456	; 0x10000000
+c02006c4:	e2833a0a 	add	r3, r3, #40960	; 0xa000
+c02006c8:	e2833088 	add	r3, r3, #136	; 0x88
+c02006cc:	e3a02004 	mov	r2, #4	; 0x4
+c02006d0:	e5832000 	str	r2, [r3]
+/cygdrive/d/Robotics/Workspace/RobotVisionExp/vcmx212-i2c/main.c:182
+	UART1_UCR4=0x0000;
+c02006d4:	e3a03201 	mov	r3, #268435456	; 0x10000000
+c02006d8:	e2833a0a 	add	r3, r3, #40960	; 0xa000
+c02006dc:	e283308c 	add	r3, r3, #140	; 0x8c
+c02006e0:	e3a02000 	mov	r2, #0	; 0x0
+c02006e4:	e5832000 	str	r2, [r3]
+/cygdrive/d/Robotics/Workspace/RobotVisionExp/vcmx212-i2c/main.c:183
+	UART1_UFCR=0x0a80;
+c02006e8:	e3a03201 	mov	r3, #268435456	; 0x10000000
+c02006ec:	e2833a0a 	add	r3, r3, #40960	; 0xa000
+c02006f0:	e2833090 	add	r3, r3, #144	; 0x90
+c02006f4:	e3a02d2a 	mov	r2, #2688	; 0xa80
+c02006f8:	e5832000 	str	r2, [r3]
+/cygdrive/d/Robotics/Workspace/RobotVisionExp/vcmx212-i2c/main.c:184
+	UART1_UBIR=2702;
+c02006fc:	e3a02201 	mov	r2, #268435456	; 0x10000000
+c0200700:	e2822a0a 	add	r2, r2, #40960	; 0xa000
+c0200704:	e28220a4 	add	r2, r2, #164	; 0xa4
+c0200708:	e3a03d2a 	mov	r3, #2688	; 0xa80
+c020070c:	e283300e 	add	r3, r3, #14	; 0xe
+c0200710:	e5823000 	str	r3, [r2]
+/cygdrive/d/Robotics/Workspace/RobotVisionExp/vcmx212-i2c/main.c:185
+	UART1_UBMR=64999;
+c0200714:	e3a02201 	mov	r2, #268435456	; 0x10000000
+c0200718:	e2822a0a 	add	r2, r2, #40960	; 0xa000
+c020071c:	e28220a8 	add	r2, r2, #168	; 0xa8
+c0200720:	e3a03cfd 	mov	r3, #64768	; 0xfd00
+c0200724:	e28330e7 	add	r3, r3, #231	; 0xe7
+c0200728:	e5823000 	str	r3, [r2]
+/cygdrive/d/Robotics/Workspace/RobotVisionExp/vcmx212-i2c/main.c:188
+	
+	//init I2C
+	I2C_IFDR=0x15;
+c020072c:	e3a03a12 	mov	r3, #73728	; 0x12000
+c0200730:	e2833241 	add	r3, r3, #268435460	; 0x10000004
+c0200734:	e3a02015 	mov	r2, #21	; 0x15
+c0200738:	e5832000 	str	r2, [r3]
+/cygdrive/d/Robotics/Workspace/RobotVisionExp/vcmx212-i2c/main.c:189
+	I2C_I2CR=0x80;	//do a complete reset of I2C
+c020073c:	e3a03a12 	mov	r3, #73728	; 0x12000
+c0200740:	e2833281 	add	r3, r3, #268435464	; 0x10000008
+c0200744:	e3a02080 	mov	r2, #128	; 0x80
+c0200748:	e5832000 	str	r2, [r3]
+/cygdrive/d/Robotics/Workspace/RobotVisionExp/vcmx212-i2c/main.c:190
+	I2C_I2CR=0x00;
+c020074c:	e3a03a12 	mov	r3, #73728	; 0x12000
+c0200750:	e2833281 	add	r3, r3, #268435464	; 0x10000008
+c0200754:	e3a02000 	mov	r2, #0	; 0x0
+c0200758:	e5832000 	str	r2, [r3]
+/cygdrive/d/Robotics/Workspace/RobotVisionExp/vcmx212-i2c/main.c:191
+	I2C_I2CR=0x80;
+c020075c:	e3a03a12 	mov	r3, #73728	; 0x12000
+c0200760:	e2833281 	add	r3, r3, #268435464	; 0x10000008
+c0200764:	e3a02080 	mov	r2, #128	; 0x80
+c0200768:	e5832000 	str	r2, [r3]
+/cygdrive/d/Robotics/Workspace/RobotVisionExp/vcmx212-i2c/main.c:197
+	
+	
+	while(1)
+	{
+		//wait for commands from PC
+		UINT SerMode=SER_NULL;
+c020076c:	e3a03000 	mov	r3, #0	; 0x0
+c0200770:	e50b301c 	str	r3, [fp, #-28]
+/cygdrive/d/Robotics/Workspace/RobotVisionExp/vcmx212-i2c/main.c:198
+		UINT SerialFlag=0;
+c0200774:	e3a03000 	mov	r3, #0	; 0x0
+c0200778:	e50b3020 	str	r3, [fp, #-32]
+/cygdrive/d/Robotics/Workspace/RobotVisionExp/vcmx212-i2c/main.c:199
+		UINT SerialBufLen=0;
+c020077c:	e3a03000 	mov	r3, #0	; 0x0
+c0200780:	e50b3024 	str	r3, [fp, #-36]
+/cygdrive/d/Robotics/Workspace/RobotVisionExp/vcmx212-i2c/main.c:203
+		UCHAR SerialBuf[BUFFER_LEN];
+		while(1)
+		{
+			while((UART1_USR2 & 0x0001)==0);
+c0200784:	e3a03201 	mov	r3, #268435456	; 0x10000000
+c0200788:	e2833a0a 	add	r3, r3, #40960	; 0xa000
+c020078c:	e2833098 	add	r3, r3, #152	; 0x98
+c0200790:	e5933000 	ldr	r3, [r3]
+c0200794:	e2233001 	eor	r3, r3, #1	; 0x1
+c0200798:	e2033001 	and	r3, r3, #1	; 0x1
+c020079c:	e3530000 	cmp	r3, #0	; 0x0
+c02007a0:	0a000000 	beq	c02007a8 <main+0x200>
+c02007a4:	eafffff6 	b	c0200784 <main+0x1dc>
+/cygdrive/d/Robotics/Workspace/RobotVisionExp/vcmx212-i2c/main.c:205
+			
+			UCHAR uc=UART1_URXD & 0xff;
+c02007a8:	e3a03201 	mov	r3, #268435456	; 0x10000000
+c02007ac:	e2833a0a 	add	r3, r3, #40960	; 0xa000
+c02007b0:	e5933000 	ldr	r3, [r3]
+c02007b4:	e54b3089 	strb	r3, [fp, #-137]
+/cygdrive/d/Robotics/Workspace/RobotVisionExp/vcmx212-i2c/main.c:207
+		
+			switch(SerMode)
+c02007b8:	e51b201c 	ldr	r2, [fp, #-28]
+c02007bc:	e50b2098 	str	r2, [fp, #-152]
+c02007c0:	e51b3098 	ldr	r3, [fp, #-152]
+c02007c4:	e3530001 	cmp	r3, #1	; 0x1
+c02007c8:	0a000024 	beq	c0200860 <main+0x2b8>
+c02007cc:	e51bc098 	ldr	ip, [fp, #-152]
+c02007d0:	e35c0001 	cmp	ip, #1	; 0x1
+c02007d4:	3a000003 	bcc	c02007e8 <main+0x240>
+c02007d8:	e51b2098 	ldr	r2, [fp, #-152]
+c02007dc:	e3520002 	cmp	r2, #2	; 0x2
+c02007e0:	0a000044 	beq	c02008f8 <main+0x350>
+c02007e4:	ea00004a 	b	c0200914 <main+0x36c>
+/cygdrive/d/Robotics/Workspace/RobotVisionExp/vcmx212-i2c/main.c:210
+			{
+			case SER_NULL:
+				switch(uc)
+c02007e8:	e55b3089 	ldrb	r3, [fp, #-137]
+c02007ec:	e50b3090 	str	r3, [fp, #-144]
+c02007f0:	e51bc090 	ldr	ip, [fp, #-144]
+c02007f4:	e35c00c0 	cmp	ip, #192	; 0xc0
+c02007f8:	0a000003 	beq	c020080c <main+0x264>
+c02007fc:	e51b2090 	ldr	r2, [fp, #-144]
+c0200800:	e35200db 	cmp	r2, #219	; 0xdb
+c0200804:	0a000006 	beq	c0200824 <main+0x27c>
+c0200808:	ea000008 	b	c0200830 <main+0x288>
+/cygdrive/d/Robotics/Workspace/RobotVisionExp/vcmx212-i2c/main.c:213
+				{
+				case FEND:
+					if(SerialBufLen>0)
+c020080c:	e51b3024 	ldr	r3, [fp, #-36]
+c0200810:	e3530000 	cmp	r3, #0	; 0x0
+c0200814:	0a00003e 	beq	c0200914 <main+0x36c>
+/cygdrive/d/Robotics/Workspace/RobotVisionExp/vcmx212-i2c/main.c:214
+						SerialFlag=1;
+c0200818:	e3a03001 	mov	r3, #1	; 0x1
+c020081c:	e50b3020 	str	r3, [fp, #-32]
+/cygdrive/d/Robotics/Workspace/RobotVisionExp/vcmx212-i2c/main.c:215
+					break;
+c0200820:	ea00003b 	b	c0200914 <main+0x36c>
+/cygdrive/d/Robotics/Workspace/RobotVisionExp/vcmx212-i2c/main.c:217
+				case FESC:
+					SerMode=SER_FESC;
+c0200824:	e3a03001 	mov	r3, #1	; 0x1
+c0200828:	e50b301c 	str	r3, [fp, #-28]
+/cygdrive/d/Robotics/Workspace/RobotVisionExp/vcmx212-i2c/main.c:218
+					break;
+c020082c:	ea000038 	b	c0200914 <main+0x36c>
+/cygdrive/d/Robotics/Workspace/RobotVisionExp/vcmx212-i2c/main.c:220
+				default:
+					SerialBuf[SerialBufLen++]=uc;
+c0200830:	e24b0024 	sub	r0, fp, #36	; 0x24
+c0200834:	e5902000 	ldr	r2, [r0]
+c0200838:	e3e0107b 	mvn	r1, #123	; 0x7b
+c020083c:	e1a03002 	mov	r3, r2
+c0200840:	e24bc00c 	sub	ip, fp, #12	; 0xc
+c0200844:	e083300c 	add	r3, r3, ip
+c0200848:	e0831001 	add	r1, r3, r1
+c020084c:	e55b3089 	ldrb	r3, [fp, #-137]
+c0200850:	e5c13000 	strb	r3, [r1]
+c0200854:	e2822001 	add	r2, r2, #1	; 0x1
+c0200858:	e5802000 	str	r2, [r0]
+/cygdrive/d/Robotics/Workspace/RobotVisionExp/vcmx212-i2c/main.c:223
+					break;
+				}
+				break;
+c020085c:	ea00002c 	b	c0200914 <main+0x36c>
+/cygdrive/d/Robotics/Workspace/RobotVisionExp/vcmx212-i2c/main.c:225
+			case SER_FESC:
+				SerMode=SER_NULL;
+c0200860:	e3a03000 	mov	r3, #0	; 0x0
+c0200864:	e50b301c 	str	r3, [fp, #-28]
+/cygdrive/d/Robotics/Workspace/RobotVisionExp/vcmx212-i2c/main.c:226
+				switch(uc)
+c0200868:	e55b2089 	ldrb	r2, [fp, #-137]
+c020086c:	e50b2094 	str	r2, [fp, #-148]
+c0200870:	e51b3094 	ldr	r3, [fp, #-148]
+c0200874:	e35300dc 	cmp	r3, #220	; 0xdc
+c0200878:	0a00000f 	beq	c02008bc <main+0x314>
+c020087c:	e51bc094 	ldr	ip, [fp, #-148]
+c0200880:	e35c00dd 	cmp	ip, #221	; 0xdd
+c0200884:	0a000000 	beq	c020088c <main+0x2e4>
+c0200888:	ea000017 	b	c02008ec <main+0x344>
+/cygdrive/d/Robotics/Workspace/RobotVisionExp/vcmx212-i2c/main.c:229
+				{
+				case TFESC:
+					SerialBuf[SerialBufLen++]=FESC;
+c020088c:	e24b0024 	sub	r0, fp, #36	; 0x24
+c0200890:	e5902000 	ldr	r2, [r0]
+c0200894:	e3e0107b 	mvn	r1, #123	; 0x7b
+c0200898:	e1a03002 	mov	r3, r2
+c020089c:	e24bc00c 	sub	ip, fp, #12	; 0xc
+c02008a0:	e083300c 	add	r3, r3, ip
+c02008a4:	e0831001 	add	r1, r3, r1
+c02008a8:	e3e03024 	mvn	r3, #36	; 0x24
+c02008ac:	e5c13000 	strb	r3, [r1]
+c02008b0:	e2822001 	add	r2, r2, #1	; 0x1
+c02008b4:	e5802000 	str	r2, [r0]
+/cygdrive/d/Robotics/Workspace/RobotVisionExp/vcmx212-i2c/main.c:230
+					break;
+c02008b8:	ea000015 	b	c0200914 <main+0x36c>
+/cygdrive/d/Robotics/Workspace/RobotVisionExp/vcmx212-i2c/main.c:232
+				case TFEND:
+					SerialBuf[SerialBufLen++]=FEND;
+c02008bc:	e24b0024 	sub	r0, fp, #36	; 0x24
+c02008c0:	e5902000 	ldr	r2, [r0]
+c02008c4:	e3e0107b 	mvn	r1, #123	; 0x7b
+c02008c8:	e1a03002 	mov	r3, r2
+c02008cc:	e24bc00c 	sub	ip, fp, #12	; 0xc
+c02008d0:	e083300c 	add	r3, r3, ip
+c02008d4:	e0831001 	add	r1, r3, r1
+c02008d8:	e3e0303f 	mvn	r3, #63	; 0x3f
+c02008dc:	e5c13000 	strb	r3, [r1]
+c02008e0:	e2822001 	add	r2, r2, #1	; 0x1
+c02008e4:	e5802000 	str	r2, [r0]
+/cygdrive/d/Robotics/Workspace/RobotVisionExp/vcmx212-i2c/main.c:233
+					break;
+c02008e8:	ea000009 	b	c0200914 <main+0x36c>
+/cygdrive/d/Robotics/Workspace/RobotVisionExp/vcmx212-i2c/main.c:235
+				default:
+					SerMode=SER_ERR;
+c02008ec:	e3a03002 	mov	r3, #2	; 0x2
+c02008f0:	e50b301c 	str	r3, [fp, #-28]
+/cygdrive/d/Robotics/Workspace/RobotVisionExp/vcmx212-i2c/main.c:238
+					break;
+				}
+				break;
+c02008f4:	ea000006 	b	c0200914 <main+0x36c>
+/cygdrive/d/Robotics/Workspace/RobotVisionExp/vcmx212-i2c/main.c:240
+			case SER_ERR:
+				if(uc==FEND)
+c02008f8:	e55b3089 	ldrb	r3, [fp, #-137]
+c02008fc:	e35300c0 	cmp	r3, #192	; 0xc0
+c0200900:	1a000003 	bne	c0200914 <main+0x36c>
+/cygdrive/d/Robotics/Workspace/RobotVisionExp/vcmx212-i2c/main.c:242
+				{
+					SerialBufLen=0;
+c0200904:	e3a03000 	mov	r3, #0	; 0x0
+c0200908:	e50b3024 	str	r3, [fp, #-36]
+/cygdrive/d/Robotics/Workspace/RobotVisionExp/vcmx212-i2c/main.c:243
+					SerMode=SER_NULL;
+c020090c:	e3a03000 	mov	r3, #0	; 0x0
+c0200910:	e50b301c 	str	r3, [fp, #-28]
+/cygdrive/d/Robotics/Workspace/RobotVisionExp/vcmx212-i2c/main.c:247
+				}
+				break;
+			}
+			if(SerialFlag)
+c0200914:	e51b3020 	ldr	r3, [fp, #-32]
+c0200918:	e3530000 	cmp	r3, #0	; 0x0
+c020091c:	0affff98 	beq	c0200784 <main+0x1dc>
+/cygdrive/d/Robotics/Workspace/RobotVisionExp/vcmx212-i2c/main.c:252
+				break;
+		}
+		
+		//process commands
+		switch(SerialBuf[0])
+c0200920:	e55b2088 	ldrb	r2, [fp, #-136]
+c0200924:	e50b209c 	str	r2, [fp, #-156]
+c0200928:	e51b309c 	ldr	r3, [fp, #-156]
+c020092c:	e353001e 	cmp	r3, #30	; 0x1e
+c0200930:	8affff8d 	bhi	c020076c <main+0x1c4>
+c0200934:	e3a03001 	mov	r3, #1	; 0x1
+c0200938:	e51bc09c 	ldr	ip, [fp, #-156]
+c020093c:	e1a03c13 	mov	r3, r3, lsl ip
+c0200940:	e50b30a0 	str	r3, [fp, #-160]
+c0200944:	e51b20a0 	ldr	r2, [fp, #-160]
+c0200948:	e3c234ff 	bic	r3, r2, #-16777216	; 0xff000000
+c020094c:	e3c338cf 	bic	r3, r3, #13565952	; 0xcf0000
+c0200950:	e3c33cf7 	bic	r3, r3, #63232	; 0xf700
+c0200954:	e3c330ef 	bic	r3, r3, #239	; 0xef
+c0200958:	e3530000 	cmp	r3, #0	; 0x0
+c020095c:	1a000008 	bne	c0200984 <main+0x3dc>
+c0200960:	e51bc0a0 	ldr	ip, [fp, #-160]
+c0200964:	e20c3502 	and	r3, ip, #8388608	; 0x800000
+c0200968:	e3530000 	cmp	r3, #0	; 0x0
+c020096c:	1a00000a 	bne	c020099c <main+0x3f4>
+c0200970:	e51b20a0 	ldr	r2, [fp, #-160]
+c0200974:	e2023101 	and	r3, r2, #1073741824	; 0x40000000
+c0200978:	e3530000 	cmp	r3, #0	; 0x0
+c020097c:	1a000011 	bne	c02009c8 <main+0x420>
+c0200980:	eaffff79 	b	c020076c <main+0x1c4>
+/cygdrive/d/Robotics/Workspace/RobotVisionExp/vcmx212-i2c/main.c:258
+		{
+		case CMD_LED:
+		case CMD_SERVO:
+		case CMD_MOTOR_DUTY:
+		case CMD_MOTOR_EN:
+			I2C_write(VC21RB1_ADDRESS, SerialBuf, SerialBufLen);
+c0200984:	e24b3088 	sub	r3, fp, #136	; 0x88
+c0200988:	e3a000aa 	mov	r0, #170	; 0xaa
+c020098c:	e1a01003 	mov	r1, r3
+c0200990:	e51b2024 	ldr	r2, [fp, #-36]
+c0200994:	ebfffe57 	bl	c02002f8 <I2C_write>
+/cygdrive/d/Robotics/Workspace/RobotVisionExp/vcmx212-i2c/main.c:259
+			break;
+c0200998:	eaffff73 	b	c020076c <main+0x1c4>
+/cygdrive/d/Robotics/Workspace/RobotVisionExp/vcmx212-i2c/main.c:261
+		case CMD_MOTOR_FAULT:
+			I2C_read(VC21RB1_ADDRESS,SerialBuf[0],SerialBuf,1);
+c020099c:	e55b3088 	ldrb	r3, [fp, #-136]
+c02009a0:	e24b2088 	sub	r2, fp, #136	; 0x88
+c02009a4:	e3a000aa 	mov	r0, #170	; 0xaa
+c02009a8:	e1a01003 	mov	r1, r3
+c02009ac:	e3a03001 	mov	r3, #1	; 0x1
+c02009b0:	ebfffd96 	bl	c0200010 <I2C_read>
+/cygdrive/d/Robotics/Workspace/RobotVisionExp/vcmx212-i2c/main.c:262
+			SendSerial(SerialBuf,1);
+c02009b4:	e24b3088 	sub	r3, fp, #136	; 0x88
+c02009b8:	e1a00003 	mov	r0, r3
+c02009bc:	e3a01001 	mov	r1, #1	; 0x1
+c02009c0:	ebfffec6 	bl	c02004e0 <SendSerial>
+/cygdrive/d/Robotics/Workspace/RobotVisionExp/vcmx212-i2c/main.c:263
+			break;
+c02009c4:	eaffff68 	b	c020076c <main+0x1c4>
+/cygdrive/d/Robotics/Workspace/RobotVisionExp/vcmx212-i2c/main.c:265
+		case CMD_ADC:
+			I2C_read(VC21RB1_ADDRESS,SerialBuf[0],SerialBuf,4);
+c02009c8:	e55b3088 	ldrb	r3, [fp, #-136]
+c02009cc:	e24b2088 	sub	r2, fp, #136	; 0x88
+c02009d0:	e3a000aa 	mov	r0, #170	; 0xaa
+c02009d4:	e1a01003 	mov	r1, r3
+c02009d8:	e3a03004 	mov	r3, #4	; 0x4
+c02009dc:	ebfffd8b 	bl	c0200010 <I2C_read>
+/cygdrive/d/Robotics/Workspace/RobotVisionExp/vcmx212-i2c/main.c:266
+			SendSerial(SerialBuf,4);
+c02009e0:	e24b3088 	sub	r3, fp, #136	; 0x88
+c02009e4:	e1a00003 	mov	r0, r3
+c02009e8:	e3a01004 	mov	r1, #4	; 0x4
+c02009ec:	ebfffebb 	bl	c02004e0 <SendSerial>
+/cygdrive/d/Robotics/Workspace/RobotVisionExp/vcmx212-i2c/main.c:267
+			break;
+c02009f0:	eaffff5d 	b	c020076c <main+0x1c4>
+c02009f4:	1f18060f 	swine	0x0018060f
+c02009f8:	1f38060f 	swine	0x0038060f
+c02009fc:	05070705 	streq	r0, [r7, #-1797]
