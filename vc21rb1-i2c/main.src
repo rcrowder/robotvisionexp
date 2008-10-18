@@ -1,0 +1,1634 @@
+
+main:     file format elf32-littlearm
+
+Disassembly of section .text:
+
+00000000 <_startup>:
+_startup:
+
+# Exception Vectors
+
+_vectors:       ldr     PC, Reset_Addr         
+       0:	e59ff018 	ldr	pc, [pc, #24]	; 20 <Reset_Addr>
+                ldr     PC, Undef_Addr
+       4:	e59ff018 	ldr	pc, [pc, #24]	; 24 <Undef_Addr>
+                ldr     PC, SWI_Addr
+       8:	e59ff018 	ldr	pc, [pc, #24]	; 28 <SWI_Addr>
+                ldr     PC, PAbt_Addr
+       c:	e59ff018 	ldr	pc, [pc, #24]	; 2c <PAbt_Addr>
+                ldr     PC, DAbt_Addr
+      10:	e59ff018 	ldr	pc, [pc, #24]	; 30 <DAbt_Addr>
+                nop							/* Reserved Vector (holds Philips ISP checksum) */
+      14:	e1a00000 	nop			(mov r0,r0)
+                ldr     PC, [PC,#-0xFF0]	/* see page 71 of "Insiders Guide to the Philips ARM7-Based Microcontrollers" by Trevor Martin  */
+      18:	e51ffff0 	ldr	pc, [pc, #-4080]	; fffff030 <_stack_end+0xbfff7034>
+                ldr     PC, FIQ_Addr
+      1c:	e59ff014 	ldr	pc, [pc, #20]	; 38 <FIQ_Addr>
+
+00000020 <Reset_Addr>:
+      20:	00000200 	andeq	r0, r0, r0, lsl #4
+
+00000024 <Undef_Addr>:
+      24:	0000076c 	andeq	r0, r0, ip, ror #14
+
+00000028 <SWI_Addr>:
+      28:	00000758 	andeq	r0, r0, r8, asr r7
+
+0000002c <PAbt_Addr>:
+      2c:	0000076c 	andeq	r0, r0, ip, ror #14
+
+00000030 <DAbt_Addr>:
+      30:	0000076c 	andeq	r0, r0, ip, ror #14
+
+00000034 <IRQ_Addr>:
+      34:	00000730 	andeq	r0, r0, r0, lsr r7
+
+00000038 <FIQ_Addr>:
+      38:	00000744 	andeq	r0, r0, r4, asr #14
+	...
+
+00000200 <Reset_Handler>:
+
+Reset_Addr:     .word   Reset_Handler		/* defined in this module below  */
+Undef_Addr:     .word   UNDEF_Routine		/* defined in main.c  */
+SWI_Addr:       .word   SWI_Routine			/* defined in main.c  */
+PAbt_Addr:      .word   UNDEF_Routine		/* defined in main.c  */
+DAbt_Addr:      .word   UNDEF_Routine		/* defined in main.c  */
+IRQ_Addr:       .word   IRQ_Routine			/* defined in main.c  */
+FIQ_Addr:       .word   FIQ_Routine			/* defined in main.c  */
+                .word   0					/* rounds the vectors and ISR addresses to 64 bytes total  */
+
+				.=.+0x1C0					/* skip past Philips ISP ram usage (all the way to 0x40000200) */
+
+# Reset Handler
+
+Reset_Handler:  
+
+				/* Setup a stack for each mode - note that this only sets up a usable stack
+				for User mode.   Also each mode is setup with interrupts initially disabled. */
+    			  
+    			ldr   r0, =_stack_end
+     200:	e59f006c 	ldr	r0, [pc, #108]	; 274 <.text+0x274>
+    			msr   CPSR_c, #MODE_UND|I_BIT|F_BIT 	/* Undefined Instruction Mode  */
+     204:	e321f0db 	msr	CPSR_c, #219	; 0xdb
+    			mov   sp, r0
+     208:	e1a0d000 	mov	sp, r0
+    			sub   r0, r0, #UND_STACK_SIZE
+     20c:	e2400004 	sub	r0, r0, #4	; 0x4
+    			msr   CPSR_c, #MODE_ABT|I_BIT|F_BIT 	/* Abort Mode */
+     210:	e321f0d7 	msr	CPSR_c, #215	; 0xd7
+    			mov   sp, r0
+     214:	e1a0d000 	mov	sp, r0
+    			sub   r0, r0, #ABT_STACK_SIZE
+     218:	e2400004 	sub	r0, r0, #4	; 0x4
+    			msr   CPSR_c, #MODE_FIQ|I_BIT|F_BIT 	/* FIQ Mode */
+     21c:	e321f0d1 	msr	CPSR_c, #209	; 0xd1
+    			mov   sp, r0	
+     220:	e1a0d000 	mov	sp, r0
+   				sub   r0, r0, #FIQ_STACK_SIZE
+     224:	e2400004 	sub	r0, r0, #4	; 0x4
+    			msr   CPSR_c, #MODE_IRQ|I_BIT|F_BIT 	/* IRQ Mode */
+     228:	e321f0d2 	msr	CPSR_c, #210	; 0xd2
+    			mov   sp, r0
+     22c:	e1a0d000 	mov	sp, r0
+    			sub   r0, r0, #IRQ_STACK_SIZE
+     230:	e2400a01 	sub	r0, r0, #4096	; 0x1000
+    			msr   CPSR_c, #MODE_SVC|I_BIT|F_BIT 	/* Supervisor Mode*/
+     234:	e321f0d3 	msr	CPSR_c, #211	; 0xd3
+    			mov   sp, r0
+     238:	e1a0d000 	mov	sp, r0
+#    			sub   r0, r0, #SVC_STACK_SIZE
+#    			msr   CPSR_c, #MODE_SYS|I_BIT|F_BIT 	/* User Mode */
+#    			mov   sp, r0
+
+				/* copy .data section (Copy from ROM to RAM) */
+                ldr     R1, =_etext
+     23c:	e59f1034 	ldr	r1, [pc, #52]	; 278 <.text+0x278>
+                ldr     R2, =_data
+     240:	e59f2034 	ldr	r2, [pc, #52]	; 27c <.text+0x27c>
+                ldr     R3, =_edata
+     244:	e59f3034 	ldr	r3, [pc, #52]	; 280 <.text+0x280>
+1:        		cmp     R2, R3
+     248:	e1520003 	cmp	r2, r3
+                ldrlo   R0, [R1], #4
+     24c:	34910004 	ldrcc	r0, [r1], #4
+                strlo   R0, [R2], #4
+     250:	34820004 	strcc	r0, [r2], #4
+                blo     1b
+     254:	3afffffb 	bcc	248 <Reset_Handler+0x48>
+
+				/* Clear .bss section (Zero init)  */
+                mov     R0, #0
+     258:	e3a00000 	mov	r0, #0	; 0x0
+                ldr     R1, =_bss_start
+     25c:	e59f1020 	ldr	r1, [pc, #32]	; 284 <.text+0x284>
+                ldr     R2, =_bss_end
+     260:	e59f2020 	ldr	r2, [pc, #32]	; 288 <.text+0x288>
+2:				cmp     R1, R2
+     264:	e1510002 	cmp	r1, r2
+                strlo   R0, [R1], #4
+     268:	34810004 	strcc	r0, [r1], #4
+                blo     2b
+     26c:	3afffffc 	bcc	264 <Reset_Handler+0x64>
+
+				/* Enter the C code  */
+                b       main
+     270:	ea000016 	b	2d0 <main>
+     274:	40007ffc 	strmid	r7, [r0], -ip
+     278:	000012bc 	streqh	r1, [r0], -ip
+     27c:	40000200 	andmi	r0, r0, r0, lsl #4
+     280:	40000200 	andmi	r0, r0, r0, lsl #4
+     284:	40000200 	andmi	r0, r0, r0, lsl #4
+     288:	40000300 	andmi	r0, r0, r0, lsl #6
+
+0000028c <InterruptInit>:
+extern UINT SerialBufLen;
+extern UCHAR SerialBuf[BUFFER_LEN];
+
+void InterruptInit()
+{
+     28c:	e1a0c00d 	mov	ip, sp
+     290:	e92dd800 	stmdb	sp!, {fp, ip, lr, pc}
+     294:	e24cb004 	sub	fp, ip, #4	; 0x4
+     298:	e89da800 	ldmia	sp, {fp, sp, pc}
+
+0000029c <LEDInit>:
+	//RAM
+	//uncoment following line when running from RAM (moves exception vector table to RAM)
+	//MEMMAP=0x2;
+	
+}
+
+void LEDInit()
+{
+     29c:	e1a0c00d 	mov	ip, sp
+     2a0:	e92dd800 	stmdb	sp!, {fp, ip, lr, pc}
+     2a4:	e24cb004 	sub	fp, ip, #4	; 0x4
+	IO1DIR|=0x00100000;
+     2a8:	e3a0220e 	mov	r2, #-536870912	; 0xe0000000
+     2ac:	e282290a 	add	r2, r2, #163840	; 0x28000
+     2b0:	e2822018 	add	r2, r2, #24	; 0x18
+     2b4:	e3a0320e 	mov	r3, #-536870912	; 0xe0000000
+     2b8:	e283390a 	add	r3, r3, #163840	; 0x28000
+     2bc:	e2833018 	add	r3, r3, #24	; 0x18
+     2c0:	e5933000 	ldr	r3, [r3]
+     2c4:	e3833601 	orr	r3, r3, #1048576	; 0x100000
+     2c8:	e5823000 	str	r3, [r2]
+
+}
+     2cc:	e89da800 	ldmia	sp, {fp, sp, pc}
+
+000002d0 <main>:
+
+
+int main()
+{
+     2d0:	e1a0c00d 	mov	ip, sp
+     2d4:	e92dd800 	stmdb	sp!, {fp, ip, lr, pc}
+     2d8:	e24cb004 	sub	fp, ip, #4	; 0x4
+     2dc:	e24dd02c 	sub	sp, sp, #44	; 0x2c
+	UCHAR buf[20];
+	int len;
+	int RxLen;
+	int TimeoutCnt;
+	char Motor1Speed,Motor1Desired;
+	char Motor2Speed,Motor2Desired;
+	int MotorFlag;
+	int MotorCnt;
+	
+	PINSEL0=0x00008000;
+     2e0:	e3a0320e 	mov	r3, #-536870912	; 0xe0000000
+     2e4:	e283390b 	add	r3, r3, #180224	; 0x2c000
+     2e8:	e3a02902 	mov	r2, #32768	; 0x8000
+     2ec:	e5832000 	str	r2, [r3]
+	PINSEL1=0x00000400;
+     2f0:	e3a0324e 	mov	r3, #-536870908	; 0xe0000004
+     2f4:	e283390b 	add	r3, r3, #180224	; 0x2c000
+     2f8:	e3a02b01 	mov	r2, #1024	; 0x400
+     2fc:	e5832000 	str	r2, [r3]
+	
+	
+	//set internal PLL to 60MHz
+	PLLCFG=0x24;
+     300:	e3a0320e 	mov	r3, #-536870912	; 0xe0000000
+     304:	e283397f 	add	r3, r3, #2080768	; 0x1fc000
+     308:	e2833084 	add	r3, r3, #132	; 0x84
+     30c:	e3a02024 	mov	r2, #36	; 0x24
+     310:	e5832000 	str	r2, [r3]
+
+	PLLCON=0x1;
+     314:	e3a0320e 	mov	r3, #-536870912	; 0xe0000000
+     318:	e283397f 	add	r3, r3, #2080768	; 0x1fc000
+     31c:	e2833080 	add	r3, r3, #128	; 0x80
+     320:	e3a02001 	mov	r2, #1	; 0x1
+     324:	e5832000 	str	r2, [r3]
+	PLLFEED=0xAA;
+     328:	e3a0320e 	mov	r3, #-536870912	; 0xe0000000
+     32c:	e283397f 	add	r3, r3, #2080768	; 0x1fc000
+     330:	e283308c 	add	r3, r3, #140	; 0x8c
+     334:	e3a020aa 	mov	r2, #170	; 0xaa
+     338:	e5832000 	str	r2, [r3]
+	PLLFEED=0x55;
+     33c:	e3a0320e 	mov	r3, #-536870912	; 0xe0000000
+     340:	e283397f 	add	r3, r3, #2080768	; 0x1fc000
+     344:	e283308c 	add	r3, r3, #140	; 0x8c
+     348:	e3a02055 	mov	r2, #85	; 0x55
+     34c:	e5832000 	str	r2, [r3]
+
+	while(!(PLLSTAT & 0x400));
+     350:	e3a0320e 	mov	r3, #-536870912	; 0xe0000000
+     354:	e283397f 	add	r3, r3, #2080768	; 0x1fc000
+     358:	e2833088 	add	r3, r3, #136	; 0x88
+     35c:	e5933000 	ldr	r3, [r3]
+     360:	e1a03523 	mov	r3, r3, lsr #10
+     364:	e2033001 	and	r3, r3, #1	; 0x1
+     368:	e3530000 	cmp	r3, #0	; 0x0
+     36c:	1a000000 	bne	374 <main+0xa4>
+     370:	eafffff6 	b	350 <main+0x80>
+
+	PLLCON=0x3;
+     374:	e3a0320e 	mov	r3, #-536870912	; 0xe0000000
+     378:	e283397f 	add	r3, r3, #2080768	; 0x1fc000
+     37c:	e2833080 	add	r3, r3, #128	; 0x80
+     380:	e3a02003 	mov	r2, #3	; 0x3
+     384:	e5832000 	str	r2, [r3]
+	PLLFEED=0xAA;
+     388:	e3a0320e 	mov	r3, #-536870912	; 0xe0000000
+     38c:	e283397f 	add	r3, r3, #2080768	; 0x1fc000
+     390:	e283308c 	add	r3, r3, #140	; 0x8c
+     394:	e3a020aa 	mov	r2, #170	; 0xaa
+     398:	e5832000 	str	r2, [r3]
+	PLLFEED=0x55;
+     39c:	e3a0320e 	mov	r3, #-536870912	; 0xe0000000
+     3a0:	e283397f 	add	r3, r3, #2080768	; 0x1fc000
+     3a4:	e283308c 	add	r3, r3, #140	; 0x8c
+     3a8:	e3a02055 	mov	r2, #85	; 0x55
+     3ac:	e5832000 	str	r2, [r3]
+
+	//set pclk to 60MHz
+	VPBDIV=0x01;
+     3b0:	e3a0320e 	mov	r3, #-536870912	; 0xe0000000
+     3b4:	e283397f 	add	r3, r3, #2080768	; 0x1fc000
+     3b8:	e2833c01 	add	r3, r3, #256	; 0x100
+     3bc:	e3a02001 	mov	r2, #1	; 0x1
+     3c0:	e5832000 	str	r2, [r3]
+	
+	//RAM
+	//comment the following 2 lines when running from RAM
+	//set up memory accelerator
+	MAMTIM=0x04;
+     3c4:	e3a0324e 	mov	r3, #-536870908	; 0xe0000004
+     3c8:	e283397f 	add	r3, r3, #2080768	; 0x1fc000
+     3cc:	e3a02004 	mov	r2, #4	; 0x4
+     3d0:	e5832000 	str	r2, [r3]
+	MAMCR=0x2;
+     3d4:	e3a0320e 	mov	r3, #-536870912	; 0xe0000000
+     3d8:	e283397f 	add	r3, r3, #2080768	; 0x1fc000
+     3dc:	e3a02002 	mov	r2, #2	; 0x2
+     3e0:	e5832000 	str	r2, [r3]
+	
+	InterruptInit();
+     3e4:	ebffffa8 	bl	28c <InterruptInit>
+	I2Cinit();
+     3e8:	eb000177 	bl	9cc <I2Cinit>
+	MotorInit();
+     3ec:	eb0001c7 	bl	b10 <MotorInit>
+	LEDInit();
+     3f0:	ebffffa9 	bl	29c <LEDInit>
+	ServoInit();
+     3f4:	eb0002e4 	bl	f8c <ServoInit>
+	ADCInit();
+     3f8:	eb000361 	bl	1184 <ADCInit>
+	
+	//enable interrupts
+	asm("MRS r1, CPSR;"
+     3fc:	e10f1000 	mrs	r1, CPSR
+     400:	e3c11080 	bic	r1, r1, #128	; 0x80
+     404:	e121f001 	msr	CPSR_c, r1
+		"BIC r1, r1, #0x80;"
+		"MSR CPSR_c, r1;");
+		
+	TimeoutCnt=0;
+     408:	e3a03000 	mov	r3, #0	; 0x0
+     40c:	e50b302c 	str	r3, [fp, #-44]
+	Motor1Desired=Motor1Speed=MOTOR_OFF;
+     410:	e3e0307f 	mvn	r3, #127	; 0x7f
+     414:	e54b302d 	strb	r3, [fp, #-45]
+     418:	e3e0307f 	mvn	r3, #127	; 0x7f
+     41c:	e54b302e 	strb	r3, [fp, #-46]
+	Motor2Desired=Motor2Speed=MOTOR_OFF;
+     420:	e3e0307f 	mvn	r3, #127	; 0x7f
+     424:	e54b302f 	strb	r3, [fp, #-47]
+     428:	e3e0307f 	mvn	r3, #127	; 0x7f
+     42c:	e54b3030 	strb	r3, [fp, #-48]
+	MotorCnt=0;
+     430:	e3a03000 	mov	r3, #0	; 0x0
+     434:	e50b3038 	str	r3, [fp, #-56]
+	while(1)
+	{
+		if(SerialFlag)
+     438:	e59f32e4 	ldr	r3, [pc, #740]	; 724 <.text+0x724>
+     43c:	e5933000 	ldr	r3, [r3]
+     440:	e3530000 	cmp	r3, #0	; 0x0
+     444:	0a000060 	beq	5cc <.text+0x5cc>
+		{
+			SerialFlag=0;
+     448:	e59f22d4 	ldr	r2, [pc, #724]	; 724 <.text+0x724>
+     44c:	e3a03000 	mov	r3, #0	; 0x0
+     450:	e5823000 	str	r3, [r2]
+			TimeoutCnt=0;
+     454:	e3a03000 	mov	r3, #0	; 0x0
+     458:	e50b302c 	str	r3, [fp, #-44]
+			RxLen=SerialBufLen;
+     45c:	e59f32c4 	ldr	r3, [pc, #708]	; 728 <.text+0x728>
+     460:	e5933000 	ldr	r3, [r3]
+     464:	e50b3028 	str	r3, [fp, #-40]
+			SerialBufLen=0;
+     468:	e59f22b8 	ldr	r2, [pc, #696]	; 728 <.text+0x728>
+     46c:	e3a03000 	mov	r3, #0	; 0x0
+     470:	e5823000 	str	r3, [r2]
+
+			switch(SerialBuf[0])
+     474:	e59f32b0 	ldr	r3, [pc, #688]	; 72c <.text+0x72c>
+     478:	e5d33000 	ldrb	r3, [r3]
+     47c:	e2433004 	sub	r3, r3, #4	; 0x4
+     480:	e353001a 	cmp	r3, #26	; 0x1a
+     484:	979ff103 	ldrls	pc, [pc, r3, lsl #2]
+     488:	ea00004f 	b	5cc <.text+0x5cc>
+     48c:	000004f8 	streqd	r0, [r0], -r8
+     490:	000005cc 	andeq	r0, r0, ip, asr #11
+     494:	000005cc 	andeq	r0, r0, ip, asr #11
+     498:	000005cc 	andeq	r0, r0, ip, asr #11
+     49c:	000005cc 	andeq	r0, r0, ip, asr #11
+     4a0:	000005cc 	andeq	r0, r0, ip, asr #11
+     4a4:	000005cc 	andeq	r0, r0, ip, asr #11
+     4a8:	00000588 	andeq	r0, r0, r8, lsl #11
+     4ac:	000005cc 	andeq	r0, r0, ip, asr #11
+     4b0:	000005cc 	andeq	r0, r0, ip, asr #11
+     4b4:	000005cc 	andeq	r0, r0, ip, asr #11
+     4b8:	000005cc 	andeq	r0, r0, ip, asr #11
+     4bc:	000005cc 	andeq	r0, r0, ip, asr #11
+     4c0:	000005cc 	andeq	r0, r0, ip, asr #11
+     4c4:	000005cc 	andeq	r0, r0, ip, asr #11
+     4c8:	000005cc 	andeq	r0, r0, ip, asr #11
+     4cc:	00000538 	andeq	r0, r0, r8, lsr r5
+     4d0:	0000054c 	andeq	r0, r0, ip, asr #10
+     4d4:	000005cc 	andeq	r0, r0, ip, asr #11
+     4d8:	00000568 	andeq	r0, r0, r8, ror #10
+     4dc:	000005cc 	andeq	r0, r0, ip, asr #11
+     4e0:	000005cc 	andeq	r0, r0, ip, asr #11
+     4e4:	000005cc 	andeq	r0, r0, ip, asr #11
+     4e8:	000005cc 	andeq	r0, r0, ip, asr #11
+     4ec:	000005cc 	andeq	r0, r0, ip, asr #11
+     4f0:	000005cc 	andeq	r0, r0, ip, asr #11
+     4f4:	000005a8 	andeq	r0, r0, r8, lsr #11
+			{
+			case CMD_LED:
+				if(SerialBuf[1])
+     4f8:	e59f322c 	ldr	r3, [pc, #556]	; 72c <.text+0x72c>
+     4fc:	e5d33001 	ldrb	r3, [r3, #1]
+     500:	e3530000 	cmp	r3, #0	; 0x0
+     504:	0a000005 	beq	520 <.text+0x520>
+					IO1CLR=0x00100000;
+     508:	e3a0320e 	mov	r3, #-536870912	; 0xe0000000
+     50c:	e283390a 	add	r3, r3, #163840	; 0x28000
+     510:	e283301c 	add	r3, r3, #28	; 0x1c
+     514:	e3a02601 	mov	r2, #1048576	; 0x100000
+     518:	e5832000 	str	r2, [r3]
+     51c:	ea00002a 	b	5cc <.text+0x5cc>
+				else
+					IO1SET=0x00100000;
+     520:	e3a0320e 	mov	r3, #-536870912	; 0xe0000000
+     524:	e283390a 	add	r3, r3, #163840	; 0x28000
+     528:	e2833014 	add	r3, r3, #20	; 0x14
+     52c:	e3a02601 	mov	r2, #1048576	; 0x100000
+     530:	e5832000 	str	r2, [r3]
+				break;
+     534:	ea000024 	b	5cc <.text+0x5cc>
+			case CMD_MOTOR_EN:
+				MotorEnable(SerialBuf[1]);
+     538:	e59f31ec 	ldr	r3, [pc, #492]	; 72c <.text+0x72c>
+     53c:	e5d33001 	ldrb	r3, [r3, #1]
+     540:	e1a00003 	mov	r0, r3
+     544:	eb0001b3 	bl	c18 <MotorEnable>
+				break;
+     548:	ea00001f 	b	5cc <.text+0x5cc>
+			case CMD_MOTOR_DUTY:
+				Motor1Desired=SerialBuf[1];
+     54c:	e59f31d8 	ldr	r3, [pc, #472]	; 72c <.text+0x72c>
+     550:	e5d33001 	ldrb	r3, [r3, #1]
+     554:	e54b302e 	strb	r3, [fp, #-46]
+				Motor2Desired=SerialBuf[2];
+     558:	e59f31cc 	ldr	r3, [pc, #460]	; 72c <.text+0x72c>
+     55c:	e5d33002 	ldrb	r3, [r3, #2]
+     560:	e54b3030 	strb	r3, [fp, #-48]
+				//MotorDuty(SerialBuf[1],SerialBuf[2]);
+				break;
+     564:	ea000018 	b	5cc <.text+0x5cc>
+			case CMD_MOTOR_FAULT:
+				buf[0]=MotorFault();
+     568:	eb000227 	bl	e0c <MotorFault>
+     56c:	e1a03000 	mov	r3, r0
+     570:	e54b3020 	strb	r3, [fp, #-32]
+				I2CSend(buf,1);
+     574:	e24b3020 	sub	r3, fp, #32	; 0x20
+     578:	e1a00003 	mov	r0, r3
+     57c:	e3a01001 	mov	r1, #1	; 0x1
+     580:	eb00013f 	bl	a84 <I2CSend>
+				break;
+     584:	ea000010 	b	5cc <.text+0x5cc>
+			case CMD_SERVO:
+				SetServo(SerialBuf[1],SerialBuf[2]);
+     588:	e59f319c 	ldr	r3, [pc, #412]	; 72c <.text+0x72c>
+     58c:	e5d32001 	ldrb	r2, [r3, #1]
+     590:	e59f3194 	ldr	r3, [pc, #404]	; 72c <.text+0x72c>
+     594:	e5d33002 	ldrb	r3, [r3, #2]
+     598:	e1a00002 	mov	r0, r2
+     59c:	e1a01003 	mov	r1, r3
+     5a0:	eb000268 	bl	f48 <SetServo>
+				break;
+     5a4:	ea000008 	b	5cc <.text+0x5cc>
+			case CMD_ADC:
+				len=ADCFillValues(buf);
+     5a8:	e24b3020 	sub	r3, fp, #32	; 0x20
+     5ac:	e1a00003 	mov	r0, r3
+     5b0:	eb000311 	bl	11fc <ADCFillValues>
+     5b4:	e1a03000 	mov	r3, r0
+     5b8:	e50b3024 	str	r3, [fp, #-36]
+				I2CSend(buf,len);
+     5bc:	e24b3020 	sub	r3, fp, #32	; 0x20
+     5c0:	e1a00003 	mov	r0, r3
+     5c4:	e51b1024 	ldr	r1, [fp, #-36]
+     5c8:	eb00012d 	bl	a84 <I2CSend>
+				break;
+			}
+			
+		}
+		
+		//slowly ramp up speed - could be placed in a timer interrupt
+		MotorCnt++;
+     5cc:	e51b3038 	ldr	r3, [fp, #-56]
+     5d0:	e2833001 	add	r3, r3, #1	; 0x1
+     5d4:	e50b3038 	str	r3, [fp, #-56]
+		if(MotorCnt==MOTOR_UPDATE_RATE)
+     5d8:	e51b2038 	ldr	r2, [fp, #-56]
+     5dc:	e3a03c27 	mov	r3, #9984	; 0x2700
+     5e0:	e2833010 	add	r3, r3, #16	; 0x10
+     5e4:	e1520003 	cmp	r2, r3
+     5e8:	1a00002f 	bne	6ac <.text+0x6ac>
+		{
+			MotorCnt=0;
+     5ec:	e3a03000 	mov	r3, #0	; 0x0
+     5f0:	e50b3038 	str	r3, [fp, #-56]
+			MotorFlag=0;
+     5f4:	e3a03000 	mov	r3, #0	; 0x0
+     5f8:	e50b3034 	str	r3, [fp, #-52]
+			if(Motor1Desired<Motor1Speed)
+     5fc:	e55b202e 	ldrb	r2, [fp, #-46]
+     600:	e55b302d 	ldrb	r3, [fp, #-45]
+     604:	e1520003 	cmp	r2, r3
+     608:	2a000004 	bcs	620 <.text+0x620>
+			{
+				Motor1Speed--;
+     60c:	e55b302d 	ldrb	r3, [fp, #-45]
+     610:	e2433001 	sub	r3, r3, #1	; 0x1
+     614:	e54b302d 	strb	r3, [fp, #-45]
+				MotorFlag=1;
+     618:	e3a03001 	mov	r3, #1	; 0x1
+     61c:	e50b3034 	str	r3, [fp, #-52]
+			}
+			if(Motor1Desired>Motor1Speed)
+     620:	e55b202e 	ldrb	r2, [fp, #-46]
+     624:	e55b302d 	ldrb	r3, [fp, #-45]
+     628:	e1520003 	cmp	r2, r3
+     62c:	9a000004 	bls	644 <.text+0x644>
+			{	
+				Motor1Speed++;
+     630:	e55b302d 	ldrb	r3, [fp, #-45]
+     634:	e2833001 	add	r3, r3, #1	; 0x1
+     638:	e54b302d 	strb	r3, [fp, #-45]
+				MotorFlag=1;
+     63c:	e3a03001 	mov	r3, #1	; 0x1
+     640:	e50b3034 	str	r3, [fp, #-52]
+			}
+			if(Motor2Desired<Motor2Speed)
+     644:	e55b2030 	ldrb	r2, [fp, #-48]
+     648:	e55b302f 	ldrb	r3, [fp, #-47]
+     64c:	e1520003 	cmp	r2, r3
+     650:	2a000004 	bcs	668 <.text+0x668>
+			{
+				Motor2Speed--;
+     654:	e55b302f 	ldrb	r3, [fp, #-47]
+     658:	e2433001 	sub	r3, r3, #1	; 0x1
+     65c:	e54b302f 	strb	r3, [fp, #-47]
+				MotorFlag=1;
+     660:	e3a03001 	mov	r3, #1	; 0x1
+     664:	e50b3034 	str	r3, [fp, #-52]
+			}
+			if(Motor2Desired>Motor2Speed)
+     668:	e55b2030 	ldrb	r2, [fp, #-48]
+     66c:	e55b302f 	ldrb	r3, [fp, #-47]
+     670:	e1520003 	cmp	r2, r3
+     674:	9a000004 	bls	68c <.text+0x68c>
+			{	
+				Motor2Speed++;
+     678:	e55b302f 	ldrb	r3, [fp, #-47]
+     67c:	e2833001 	add	r3, r3, #1	; 0x1
+     680:	e54b302f 	strb	r3, [fp, #-47]
+				MotorFlag=1;
+     684:	e3a03001 	mov	r3, #1	; 0x1
+     688:	e50b3034 	str	r3, [fp, #-52]
+			}
+			if(MotorFlag)
+     68c:	e51b3034 	ldr	r3, [fp, #-52]
+     690:	e3530000 	cmp	r3, #0	; 0x0
+     694:	0a000004 	beq	6ac <.text+0x6ac>
+				MotorDuty(Motor1Speed,Motor2Speed);
+     698:	e55b302d 	ldrb	r3, [fp, #-45]
+     69c:	e55b202f 	ldrb	r2, [fp, #-47]
+     6a0:	e1a00003 	mov	r0, r3
+     6a4:	e1a01002 	mov	r1, r2
+     6a8:	eb000180 	bl	cb0 <MotorDuty>
+		}
+		
+		//ensure the VCMX212 still transmitting messages, otherwise shut down motors
+		if(TimeoutCnt==TIMEOUT)
+     6ac:	e51b202c 	ldr	r2, [fp, #-44]
+     6b0:	e3a0393d 	mov	r3, #999424	; 0xf4000
+     6b4:	e2833d09 	add	r3, r3, #576	; 0x240
+     6b8:	e1520003 	cmp	r2, r3
+     6bc:	1a00000e 	bne	6fc <.text+0x6fc>
+		{
+			MotorDuty(MOTOR_OFF,MOTOR_OFF);
+     6c0:	e3a00080 	mov	r0, #128	; 0x80
+     6c4:	e3a01080 	mov	r1, #128	; 0x80
+     6c8:	eb000178 	bl	cb0 <MotorDuty>
+			Motor1Desired=Motor1Speed=MOTOR_OFF;
+     6cc:	e3e0307f 	mvn	r3, #127	; 0x7f
+     6d0:	e54b302d 	strb	r3, [fp, #-45]
+     6d4:	e3e0307f 	mvn	r3, #127	; 0x7f
+     6d8:	e54b302e 	strb	r3, [fp, #-46]
+			Motor2Desired=Motor2Speed=MOTOR_OFF;
+     6dc:	e3e0307f 	mvn	r3, #127	; 0x7f
+     6e0:	e54b302f 	strb	r3, [fp, #-47]
+     6e4:	e3e0307f 	mvn	r3, #127	; 0x7f
+     6e8:	e54b3030 	strb	r3, [fp, #-48]
+			TimeoutCnt++;
+     6ec:	e51b302c 	ldr	r3, [fp, #-44]
+     6f0:	e2833001 	add	r3, r3, #1	; 0x1
+     6f4:	e50b302c 	str	r3, [fp, #-44]
+     6f8:	eaffff4e 	b	438 <main+0x168>
+		}
+		else if(TimeoutCnt<TIMEOUT)
+     6fc:	e51b202c 	ldr	r2, [fp, #-44]
+     700:	e3a0393d 	mov	r3, #999424	; 0xf4000
+     704:	e2833f8f 	add	r3, r3, #572	; 0x23c
+     708:	e2833003 	add	r3, r3, #3	; 0x3
+     70c:	e1520003 	cmp	r2, r3
+     710:	caffff48 	bgt	438 <main+0x168>
+		{
+			TimeoutCnt++;
+     714:	e51b302c 	ldr	r3, [fp, #-44]
+     718:	e2833001 	add	r3, r3, #1	; 0x1
+     71c:	e50b302c 	str	r3, [fp, #-44]
+     720:	eaffff44 	b	438 <main+0x168>
+     724:	400002d4 	ldrmid	r0, [r0], -r4
+     728:	40000268 	andmi	r0, r0, r8, ror #4
+     72c:	4000026c 	andmi	r0, r0, ip, ror #4
+
+00000730 <IRQ_Routine>:
+		}
+		
+	}
+
+	return 0;
+}
+
+/*  Stubs for various interrupts (may be replaced later)  */
+/*  ----------------------------------------------------  */
+
+void IRQ_Routine (void) {
+     730:	e52dc004 	str	ip, [sp, #-4]!
+     734:	e1a0c00d 	mov	ip, sp
+     738:	e92dd800 	stmdb	sp!, {fp, ip, lr, pc}
+     73c:	e24cb004 	sub	fp, ip, #4	; 0x4
+	while (1) ;	
+     740:	eafffffe 	b	740 <IRQ_Routine+0x10>
+
+00000744 <FIQ_Routine>:
+}
+
+void FIQ_Routine (void)  {
+     744:	e52dc004 	str	ip, [sp, #-4]!
+     748:	e1a0c00d 	mov	ip, sp
+     74c:	e92dd800 	stmdb	sp!, {fp, ip, lr, pc}
+     750:	e24cb004 	sub	fp, ip, #4	; 0x4
+	while (1) ;	
+     754:	eafffffe 	b	754 <FIQ_Routine+0x10>
+
+00000758 <SWI_Routine>:
+}
+
+
+void SWI_Routine (void)  {
+     758:	e52dc004 	str	ip, [sp, #-4]!
+     75c:	e1a0c00d 	mov	ip, sp
+     760:	e92dd800 	stmdb	sp!, {fp, ip, lr, pc}
+     764:	e24cb004 	sub	fp, ip, #4	; 0x4
+	while (1) ;	
+     768:	eafffffe 	b	768 <SWI_Routine+0x10>
+
+0000076c <UNDEF_Routine>:
+}
+
+
+void UNDEF_Routine (void) {
+     76c:	e52dc004 	str	ip, [sp, #-4]!
+     770:	e1a0c00d 	mov	ip, sp
+     774:	e92dd800 	stmdb	sp!, {fp, ip, lr, pc}
+     778:	e24cb004 	sub	fp, ip, #4	; 0x4
+	while (1) ;	
+     77c:	eafffffe 	b	77c <UNDEF_Routine+0x10>
+
+00000780 <I2Cint>:
+UINT TxSerialBufLen;
+
+void I2Cint() __attribute__((interrupt("IRQ")));
+void I2Cint()
+{
+     780:	e52dc004 	str	ip, [sp, #-4]!
+     784:	e1a0c00d 	mov	ip, sp
+     788:	e92dd80f 	stmdb	sp!, {r0, r1, r2, r3, fp, ip, lr, pc}
+     78c:	e24cb004 	sub	fp, ip, #4	; 0x4
+     790:	e24dd004 	sub	sp, sp, #4	; 0x4
+	switch(I2C0STAT)
+     794:	e3a0324e 	mov	r3, #-536870908	; 0xe0000004
+     798:	e2833907 	add	r3, r3, #114688	; 0x1c000
+     79c:	e5933000 	ldr	r3, [r3]
+     7a0:	e50b3020 	str	r3, [fp, #-32]
+     7a4:	e51b3020 	ldr	r3, [fp, #-32]
+     7a8:	e35300a8 	cmp	r3, #168	; 0xa8
+     7ac:	0a000046 	beq	8cc <I2Cint+0x14c>
+     7b0:	e51b3020 	ldr	r3, [fp, #-32]
+     7b4:	e35300a8 	cmp	r3, #168	; 0xa8
+     7b8:	8a00000d 	bhi	7f4 <I2Cint+0x74>
+     7bc:	e51b3020 	ldr	r3, [fp, #-32]
+     7c0:	e3530080 	cmp	r3, #128	; 0x80
+     7c4:	0a000022 	beq	854 <I2Cint+0xd4>
+     7c8:	e51b3020 	ldr	r3, [fp, #-32]
+     7cc:	e3530080 	cmp	r3, #128	; 0x80
+     7d0:	8a000003 	bhi	7e4 <I2Cint+0x64>
+     7d4:	e51b3020 	ldr	r3, [fp, #-32]
+     7d8:	e3530060 	cmp	r3, #96	; 0x60
+     7dc:	0a000012 	beq	82c <I2Cint+0xac>
+     7e0:	ea00006c 	b	998 <I2Cint+0x218>
+     7e4:	e51b3020 	ldr	r3, [fp, #-32]
+     7e8:	e35300a0 	cmp	r3, #160	; 0xa0
+     7ec:	0a000029 	beq	898 <I2Cint+0x118>
+     7f0:	ea000068 	b	998 <I2Cint+0x218>
+     7f4:	e51b3020 	ldr	r3, [fp, #-32]
+     7f8:	e35300c0 	cmp	r3, #192	; 0xc0
+     7fc:	0a00005c 	beq	974 <I2Cint+0x1f4>
+     800:	e51b3020 	ldr	r3, [fp, #-32]
+     804:	e35300c0 	cmp	r3, #192	; 0xc0
+     808:	8a000003 	bhi	81c <I2Cint+0x9c>
+     80c:	e51b3020 	ldr	r3, [fp, #-32]
+     810:	e35300b8 	cmp	r3, #184	; 0xb8
+     814:	0a000041 	beq	920 <I2Cint+0x1a0>
+     818:	ea00005e 	b	998 <I2Cint+0x218>
+     81c:	e51b3020 	ldr	r3, [fp, #-32]
+     820:	e35300c8 	cmp	r3, #200	; 0xc8
+     824:	0a000052 	beq	974 <I2Cint+0x1f4>
+     828:	ea00005a 	b	998 <I2Cint+0x218>
+	{
+	case 0x60:	//address+write
+		I2C0CONSET=0x04;
+     82c:	e3a0320e 	mov	r3, #-536870912	; 0xe0000000
+     830:	e2833907 	add	r3, r3, #114688	; 0x1c000
+     834:	e3a02004 	mov	r2, #4	; 0x4
+     838:	e5832000 	str	r2, [r3]
+		I2C0CONCLR=0x08;
+     83c:	e3a0320e 	mov	r3, #-536870912	; 0xe0000000
+     840:	e2833907 	add	r3, r3, #114688	; 0x1c000
+     844:	e2833018 	add	r3, r3, #24	; 0x18
+     848:	e3a02008 	mov	r2, #8	; 0x8
+     84c:	e5832000 	str	r2, [r3]
+		break;
+     850:	ea000050 	b	998 <I2Cint+0x218>
+	case 0x80:	//receive data
+		SerialBuf[SerialBufLen++]=I2C0DAT;
+     854:	e59f115c 	ldr	r1, [pc, #348]	; 9b8 <.text+0x9b8>
+     858:	e59f015c 	ldr	r0, [pc, #348]	; 9bc <.text+0x9bc>
+     85c:	e5902000 	ldr	r2, [r0]
+     860:	e1a03002 	mov	r3, r2
+     864:	e0831001 	add	r1, r3, r1
+     868:	e3a0328e 	mov	r3, #-536870904	; 0xe0000008
+     86c:	e2833907 	add	r3, r3, #114688	; 0x1c000
+     870:	e5933000 	ldr	r3, [r3]
+     874:	e5c13000 	strb	r3, [r1]
+     878:	e2822001 	add	r2, r2, #1	; 0x1
+     87c:	e5802000 	str	r2, [r0]
+		I2C0CONCLR=0x08;
+     880:	e3a0320e 	mov	r3, #-536870912	; 0xe0000000
+     884:	e2833907 	add	r3, r3, #114688	; 0x1c000
+     888:	e2833018 	add	r3, r3, #24	; 0x18
+     88c:	e3a02008 	mov	r2, #8	; 0x8
+     890:	e5832000 	str	r2, [r3]
+		break;
+     894:	ea00003f 	b	998 <I2Cint+0x218>
+	case 0xa0:	//receive stop
+		I2C0CONSET=0x04;
+     898:	e3a0320e 	mov	r3, #-536870912	; 0xe0000000
+     89c:	e2833907 	add	r3, r3, #114688	; 0x1c000
+     8a0:	e3a02004 	mov	r2, #4	; 0x4
+     8a4:	e5832000 	str	r2, [r3]
+		I2C0CONCLR=0x08;
+     8a8:	e3a0320e 	mov	r3, #-536870912	; 0xe0000000
+     8ac:	e2833907 	add	r3, r3, #114688	; 0x1c000
+     8b0:	e2833018 	add	r3, r3, #24	; 0x18
+     8b4:	e3a02008 	mov	r2, #8	; 0x8
+     8b8:	e5832000 	str	r2, [r3]
+		SerialFlag=1;
+     8bc:	e59f20fc 	ldr	r2, [pc, #252]	; 9c0 <.text+0x9c0>
+     8c0:	e3a03001 	mov	r3, #1	; 0x1
+     8c4:	e5823000 	str	r3, [r2]
+		break;
+     8c8:	ea000032 	b	998 <I2Cint+0x218>
+	case 0xa8:	//slave trasmitter address=read
+		I2C0DAT=TxSerialBuf[TxIndex++];
+     8cc:	e3a0128e 	mov	r1, #-536870904	; 0xe0000008
+     8d0:	e2811907 	add	r1, r1, #114688	; 0x1c000
+     8d4:	e59f00e8 	ldr	r0, [pc, #232]	; 9c4 <.text+0x9c4>
+     8d8:	e59fc0e8 	ldr	ip, [pc, #232]	; 9c8 <.text+0x9c8>
+     8dc:	e59c2000 	ldr	r2, [ip]
+     8e0:	e1a03002 	mov	r3, r2
+     8e4:	e0833000 	add	r3, r3, r0
+     8e8:	e5d33000 	ldrb	r3, [r3]
+     8ec:	e5813000 	str	r3, [r1]
+     8f0:	e2822001 	add	r2, r2, #1	; 0x1
+     8f4:	e58c2000 	str	r2, [ip]
+		I2C0CONSET=0x04;
+     8f8:	e3a0320e 	mov	r3, #-536870912	; 0xe0000000
+     8fc:	e2833907 	add	r3, r3, #114688	; 0x1c000
+     900:	e3a02004 	mov	r2, #4	; 0x4
+     904:	e5832000 	str	r2, [r3]
+		I2C0CONCLR=0x08;
+     908:	e3a0320e 	mov	r3, #-536870912	; 0xe0000000
+     90c:	e2833907 	add	r3, r3, #114688	; 0x1c000
+     910:	e2833018 	add	r3, r3, #24	; 0x18
+     914:	e3a02008 	mov	r2, #8	; 0x8
+     918:	e5832000 	str	r2, [r3]
+		break;
+     91c:	ea00001d 	b	998 <I2Cint+0x218>
+	case 0xb8:	//ACK received on transmit
+		I2C0DAT=TxSerialBuf[TxIndex++];
+     920:	e3a0128e 	mov	r1, #-536870904	; 0xe0000008
+     924:	e2811907 	add	r1, r1, #114688	; 0x1c000
+     928:	e59f0094 	ldr	r0, [pc, #148]	; 9c4 <.text+0x9c4>
+     92c:	e59fc094 	ldr	ip, [pc, #148]	; 9c8 <.text+0x9c8>
+     930:	e59c2000 	ldr	r2, [ip]
+     934:	e1a03002 	mov	r3, r2
+     938:	e0833000 	add	r3, r3, r0
+     93c:	e5d33000 	ldrb	r3, [r3]
+     940:	e5813000 	str	r3, [r1]
+     944:	e2822001 	add	r2, r2, #1	; 0x1
+     948:	e58c2000 	str	r2, [ip]
+		I2C0CONSET=0x04;
+     94c:	e3a0320e 	mov	r3, #-536870912	; 0xe0000000
+     950:	e2833907 	add	r3, r3, #114688	; 0x1c000
+     954:	e3a02004 	mov	r2, #4	; 0x4
+     958:	e5832000 	str	r2, [r3]
+		I2C0CONCLR=0x08;
+     95c:	e3a0320e 	mov	r3, #-536870912	; 0xe0000000
+     960:	e2833907 	add	r3, r3, #114688	; 0x1c000
+     964:	e2833018 	add	r3, r3, #24	; 0x18
+     968:	e3a02008 	mov	r2, #8	; 0x8
+     96c:	e5832000 	str	r2, [r3]
+		break;
+     970:	ea000008 	b	998 <I2Cint+0x218>
+	case 0xc0:	//NAK received on transmit
+	case 0xc8:	//last byte transmitted
+		I2C0CONSET=0x04;
+     974:	e3a0320e 	mov	r3, #-536870912	; 0xe0000000
+     978:	e2833907 	add	r3, r3, #114688	; 0x1c000
+     97c:	e3a02004 	mov	r2, #4	; 0x4
+     980:	e5832000 	str	r2, [r3]
+		I2C0CONCLR=0x08;
+     984:	e3a0320e 	mov	r3, #-536870912	; 0xe0000000
+     988:	e2833907 	add	r3, r3, #114688	; 0x1c000
+     98c:	e2833018 	add	r3, r3, #24	; 0x18
+     990:	e3a02008 	mov	r2, #8	; 0x8
+     994:	e5832000 	str	r2, [r3]
+		break;
+	
+	}
+	VICVECTADDR=0x0;	//reset VIC
+     998:	e3e03d3f 	mvn	r3, #4032	; 0xfc0
+     99c:	e243300f 	sub	r3, r3, #15	; 0xf
+     9a0:	e3a02000 	mov	r2, #0	; 0x0
+     9a4:	e5832000 	str	r2, [r3]
+}
+     9a8:	e24bd01c 	sub	sp, fp, #28	; 0x1c
+     9ac:	e89d680f 	ldmia	sp, {r0, r1, r2, r3, fp, sp, lr}
+     9b0:	e8bd1000 	ldmia	sp!, {ip}
+     9b4:	e25ef004 	subs	pc, lr, #4	; 0x4
+     9b8:	4000026c 	andmi	r0, r0, ip, ror #4
+     9bc:	40000268 	andmi	r0, r0, r8, ror #4
+     9c0:	400002d4 	ldrmid	r0, [r0], -r4
+     9c4:	40000200 	andmi	r0, r0, r0, lsl #4
+     9c8:	400002d0 	ldrmid	r0, [r0], -r0
+
+000009cc <I2Cinit>:
+
+void I2Cinit()
+{
+     9cc:	e1a0c00d 	mov	ip, sp
+     9d0:	e92dd800 	stmdb	sp!, {fp, ip, lr, pc}
+     9d4:	e24cb004 	sub	fp, ip, #4	; 0x4
+     9d8:	e24dd004 	sub	sp, sp, #4	; 0x4
+	UINT i;
+	PINSEL0|=0x00000050;
+     9dc:	e3a0220e 	mov	r2, #-536870912	; 0xe0000000
+     9e0:	e282290b 	add	r2, r2, #180224	; 0x2c000
+     9e4:	e3a0320e 	mov	r3, #-536870912	; 0xe0000000
+     9e8:	e283390b 	add	r3, r3, #180224	; 0x2c000
+     9ec:	e5933000 	ldr	r3, [r3]
+     9f0:	e3833050 	orr	r3, r3, #80	; 0x50
+     9f4:	e5823000 	str	r3, [r2]
+
+	//init i2c
+	I2C0CONSET=0x44;
+     9f8:	e3a0320e 	mov	r3, #-536870912	; 0xe0000000
+     9fc:	e2833907 	add	r3, r3, #114688	; 0x1c000
+     a00:	e3a02044 	mov	r2, #68	; 0x44
+     a04:	e5832000 	str	r2, [r3]
+	I2C0CONCLR=0x38;
+     a08:	e3a0320e 	mov	r3, #-536870912	; 0xe0000000
+     a0c:	e2833907 	add	r3, r3, #114688	; 0x1c000
+     a10:	e2833018 	add	r3, r3, #24	; 0x18
+     a14:	e3a02038 	mov	r2, #56	; 0x38
+     a18:	e5832000 	str	r2, [r3]
+	I2C0ADR=0xaa;
+     a1c:	e3a032ce 	mov	r3, #-536870900	; 0xe000000c
+     a20:	e2833907 	add	r3, r3, #114688	; 0x1c000
+     a24:	e3a020aa 	mov	r2, #170	; 0xaa
+     a28:	e5832000 	str	r2, [r3]
+	
+	//init interrupts
+	VICINTENABLE=0x200;
+     a2c:	e3e03efe 	mvn	r3, #4064	; 0xfe0
+     a30:	e243300f 	sub	r3, r3, #15	; 0xf
+     a34:	e3a02c02 	mov	r2, #512	; 0x200
+     a38:	e5832000 	str	r2, [r3]
+	VICVECTCNTL7=0x20 | 9;
+     a3c:	e3e03ede 	mvn	r3, #3552	; 0xde0
+     a40:	e2433003 	sub	r3, r3, #3	; 0x3
+     a44:	e3a02029 	mov	r2, #41	; 0x29
+     a48:	e5832000 	str	r2, [r3]
+	VICVECTADDR7=(UINT)I2Cint;
+     a4c:	e3e03eee 	mvn	r3, #3808	; 0xee0
+     a50:	e2433003 	sub	r3, r3, #3	; 0x3
+     a54:	e59f201c 	ldr	r2, [pc, #28]	; a78 <.text+0xa78>
+     a58:	e5832000 	str	r2, [r3]
+
+	SerialBufLen=0;
+     a5c:	e59f2018 	ldr	r2, [pc, #24]	; a7c <.text+0xa7c>
+     a60:	e3a03000 	mov	r3, #0	; 0x0
+     a64:	e5823000 	str	r3, [r2]
+	SerialFlag=0;
+     a68:	e59f2010 	ldr	r2, [pc, #16]	; a80 <.text+0xa80>
+     a6c:	e3a03000 	mov	r3, #0	; 0x0
+     a70:	e5823000 	str	r3, [r2]
+}
+     a74:	e89da808 	ldmia	sp, {r3, fp, sp, pc}
+     a78:	00000780 	andeq	r0, r0, r0, lsl #15
+     a7c:	40000268 	andmi	r0, r0, r8, ror #4
+     a80:	400002d4 	ldrmid	r0, [r0], -r4
+
+00000a84 <I2CSend>:
+
+void I2CSend(UCHAR *buf, int len)
+{
+     a84:	e1a0c00d 	mov	ip, sp
+     a88:	e92dd800 	stmdb	sp!, {fp, ip, lr, pc}
+     a8c:	e24cb004 	sub	fp, ip, #4	; 0x4
+     a90:	e24dd00c 	sub	sp, sp, #12	; 0xc
+     a94:	e50b0010 	str	r0, [fp, #-16]
+     a98:	e50b1014 	str	r1, [fp, #-20]
+	int i;
+	TxSerialBufLen=len;
+     a9c:	e59f3060 	ldr	r3, [pc, #96]	; b04 <.text+0xb04>
+     aa0:	e51b2014 	ldr	r2, [fp, #-20]
+     aa4:	e5832000 	str	r2, [r3]
+	for(i=0;i<len;i++)
+     aa8:	e3a03000 	mov	r3, #0	; 0x0
+     aac:	e50b3018 	str	r3, [fp, #-24]
+     ab0:	e51b2018 	ldr	r2, [fp, #-24]
+     ab4:	e51b3014 	ldr	r3, [fp, #-20]
+     ab8:	e1520003 	cmp	r2, r3
+     abc:	aa00000b 	bge	af0 <I2CSend+0x6c>
+		TxSerialBuf[i]=buf[i];
+     ac0:	e59f2040 	ldr	r2, [pc, #64]	; b08 <.text+0xb08>
+     ac4:	e51b3018 	ldr	r3, [fp, #-24]
+     ac8:	e0821003 	add	r1, r2, r3
+     acc:	e51b2010 	ldr	r2, [fp, #-16]
+     ad0:	e51b3018 	ldr	r3, [fp, #-24]
+     ad4:	e0823003 	add	r3, r2, r3
+     ad8:	e5d33000 	ldrb	r3, [r3]
+     adc:	e5c13000 	strb	r3, [r1]
+     ae0:	e51b3018 	ldr	r3, [fp, #-24]
+     ae4:	e2833001 	add	r3, r3, #1	; 0x1
+     ae8:	e50b3018 	str	r3, [fp, #-24]
+     aec:	eaffffef 	b	ab0 <I2CSend+0x2c>
+	TxIndex=0;
+     af0:	e59f2014 	ldr	r2, [pc, #20]	; b0c <.text+0xb0c>
+     af4:	e3a03000 	mov	r3, #0	; 0x0
+     af8:	e5823000 	str	r3, [r2]
+}
+     afc:	e24bd00c 	sub	sp, fp, #12	; 0xc
+     b00:	e89da800 	ldmia	sp, {fp, sp, pc}
+     b04:	40000264 	andmi	r0, r0, r4, ror #4
+     b08:	40000200 	andmi	r0, r0, r0, lsl #4
+     b0c:	400002d0 	ldrmid	r0, [r0], -r0
+
+00000b10 <MotorInit>:
+#include "../LPC2136.h"
+
+
+void MotorInit()
+{
+     b10:	e1a0c00d 	mov	ip, sp
+     b14:	e92dd800 	stmdb	sp!, {fp, ip, lr, pc}
+     b18:	e24cb004 	sub	fp, ip, #4	; 0x4
+	PINSEL0|=0x00008000;
+     b1c:	e3a0220e 	mov	r2, #-536870912	; 0xe0000000
+     b20:	e282290b 	add	r2, r2, #180224	; 0x2c000
+     b24:	e3a0320e 	mov	r3, #-536870912	; 0xe0000000
+     b28:	e283390b 	add	r3, r3, #180224	; 0x2c000
+     b2c:	e5933000 	ldr	r3, [r3]
+     b30:	e3833902 	orr	r3, r3, #32768	; 0x8000
+     b34:	e5823000 	str	r3, [r2]
+	PINSEL1|=0x00000400;
+     b38:	e3a0224e 	mov	r2, #-536870908	; 0xe0000004
+     b3c:	e282290b 	add	r2, r2, #180224	; 0x2c000
+     b40:	e3a0324e 	mov	r3, #-536870908	; 0xe0000004
+     b44:	e283390b 	add	r3, r3, #180224	; 0x2c000
+     b48:	e5933000 	ldr	r3, [r3]
+     b4c:	e3833b01 	orr	r3, r3, #1024	; 0x400
+     b50:	e5823000 	str	r3, [r2]
+
+	//disable motors 
+	IO1SET=0x00030000;
+     b54:	e3a0320e 	mov	r3, #-536870912	; 0xe0000000
+     b58:	e283390a 	add	r3, r3, #163840	; 0x28000
+     b5c:	e2833014 	add	r3, r3, #20	; 0x14
+     b60:	e3a02803 	mov	r2, #196608	; 0x30000
+     b64:	e5832000 	str	r2, [r3]
+	IO1DIR=0x000f0000;
+     b68:	e3a0320e 	mov	r3, #-536870912	; 0xe0000000
+     b6c:	e283390a 	add	r3, r3, #163840	; 0x28000
+     b70:	e2833018 	add	r3, r3, #24	; 0x18
+     b74:	e3a0280f 	mov	r2, #983040	; 0xf0000
+     b78:	e5832000 	str	r2, [r3]
+		
+	//setup PWM
+	PWMPCR=0x2400;
+     b7c:	e3a0320e 	mov	r3, #-536870912	; 0xe0000000
+     b80:	e2833905 	add	r3, r3, #81920	; 0x14000
+     b84:	e283304c 	add	r3, r3, #76	; 0x4c
+     b88:	e3a02b09 	mov	r2, #9216	; 0x2400
+     b8c:	e5832000 	str	r2, [r3]
+	PWMPR=24;
+     b90:	e3a032ce 	mov	r3, #-536870900	; 0xe000000c
+     b94:	e2833905 	add	r3, r3, #81920	; 0x14000
+     b98:	e3a02018 	mov	r2, #24	; 0x18
+     b9c:	e5832000 	str	r2, [r3]
+	PWMMCR=0x2;
+     ba0:	e3a0320e 	mov	r3, #-536870912	; 0xe0000000
+     ba4:	e2833905 	add	r3, r3, #81920	; 0x14000
+     ba8:	e2833014 	add	r3, r3, #20	; 0x14
+     bac:	e3a02002 	mov	r2, #2	; 0x2
+     bb0:	e5832000 	str	r2, [r3]
+	PWMMR0=256;
+     bb4:	e3a0320e 	mov	r3, #-536870912	; 0xe0000000
+     bb8:	e2833905 	add	r3, r3, #81920	; 0x14000
+     bbc:	e2833018 	add	r3, r3, #24	; 0x18
+     bc0:	e3a02c01 	mov	r2, #256	; 0x100
+     bc4:	e5832000 	str	r2, [r3]
+	PWMMR2=255;
+     bc8:	e3a0320e 	mov	r3, #-536870912	; 0xe0000000
+     bcc:	e2833905 	add	r3, r3, #81920	; 0x14000
+     bd0:	e2833020 	add	r3, r3, #32	; 0x20
+     bd4:	e3a020ff 	mov	r2, #255	; 0xff
+     bd8:	e5832000 	str	r2, [r3]
+	PWMMR5=255;
+     bdc:	e3a0320e 	mov	r3, #-536870912	; 0xe0000000
+     be0:	e2833905 	add	r3, r3, #81920	; 0x14000
+     be4:	e2833044 	add	r3, r3, #68	; 0x44
+     be8:	e3a020ff 	mov	r2, #255	; 0xff
+     bec:	e5832000 	str	r2, [r3]
+	PWMLER=0x24;
+     bf0:	e3a0320e 	mov	r3, #-536870912	; 0xe0000000
+     bf4:	e2833905 	add	r3, r3, #81920	; 0x14000
+     bf8:	e2833050 	add	r3, r3, #80	; 0x50
+     bfc:	e3a02024 	mov	r2, #36	; 0x24
+     c00:	e5832000 	str	r2, [r3]
+	PWMTCR=0x9;
+     c04:	e3a0324e 	mov	r3, #-536870908	; 0xe0000004
+     c08:	e2833905 	add	r3, r3, #81920	; 0x14000
+     c0c:	e3a02009 	mov	r2, #9	; 0x9
+     c10:	e5832000 	str	r2, [r3]
+}
+     c14:	e89da800 	ldmia	sp, {fp, sp, pc}
+
+00000c18 <MotorEnable>:
+
+void MotorEnable(UCHAR flags)
+{
+     c18:	e1a0c00d 	mov	ip, sp
+     c1c:	e92dd800 	stmdb	sp!, {fp, ip, lr, pc}
+     c20:	e24cb004 	sub	fp, ip, #4	; 0x4
+     c24:	e24dd004 	sub	sp, sp, #4	; 0x4
+     c28:	e1a03000 	mov	r3, r0
+     c2c:	e54b300d 	strb	r3, [fp, #-13]
+	if(flags & 0x01)
+     c30:	e55b300d 	ldrb	r3, [fp, #-13]
+     c34:	e2033001 	and	r3, r3, #1	; 0x1
+     c38:	e3530000 	cmp	r3, #0	; 0x0
+     c3c:	0a000005 	beq	c58 <MotorEnable+0x40>
+		IO1CLR=0x00010000;
+     c40:	e3a0320e 	mov	r3, #-536870912	; 0xe0000000
+     c44:	e283390a 	add	r3, r3, #163840	; 0x28000
+     c48:	e283301c 	add	r3, r3, #28	; 0x1c
+     c4c:	e3a02801 	mov	r2, #65536	; 0x10000
+     c50:	e5832000 	str	r2, [r3]
+     c54:	ea000004 	b	c6c <MotorEnable+0x54>
+	else
+		IO1SET=0x00010000;
+     c58:	e3a0320e 	mov	r3, #-536870912	; 0xe0000000
+     c5c:	e283390a 	add	r3, r3, #163840	; 0x28000
+     c60:	e2833014 	add	r3, r3, #20	; 0x14
+     c64:	e3a02801 	mov	r2, #65536	; 0x10000
+     c68:	e5832000 	str	r2, [r3]
+
+	if(flags & 0x02)
+     c6c:	e55b300d 	ldrb	r3, [fp, #-13]
+     c70:	e1a030a3 	mov	r3, r3, lsr #1
+     c74:	e2033001 	and	r3, r3, #1	; 0x1
+     c78:	e3530000 	cmp	r3, #0	; 0x0
+     c7c:	0a000005 	beq	c98 <MotorEnable+0x80>
+		IO1CLR=0x00020000;
+     c80:	e3a0320e 	mov	r3, #-536870912	; 0xe0000000
+     c84:	e283390a 	add	r3, r3, #163840	; 0x28000
+     c88:	e283301c 	add	r3, r3, #28	; 0x1c
+     c8c:	e3a02802 	mov	r2, #131072	; 0x20000
+     c90:	e5832000 	str	r2, [r3]
+     c94:	ea000004 	b	cac <MotorEnable+0x94>
+	else
+		IO1SET=0x00020000;
+     c98:	e3a0320e 	mov	r3, #-536870912	; 0xe0000000
+     c9c:	e283390a 	add	r3, r3, #163840	; 0x28000
+     ca0:	e2833014 	add	r3, r3, #20	; 0x14
+     ca4:	e3a02802 	mov	r2, #131072	; 0x20000
+     ca8:	e5832000 	str	r2, [r3]
+}
+     cac:	e89da808 	ldmia	sp, {r3, fp, sp, pc}
+
+00000cb0 <MotorDuty>:
+
+void MotorDuty(UCHAR spd0, UCHAR spd1)
+{
+     cb0:	e1a0c00d 	mov	ip, sp
+     cb4:	e92dd800 	stmdb	sp!, {fp, ip, lr, pc}
+     cb8:	e24cb004 	sub	fp, ip, #4	; 0x4
+     cbc:	e24dd004 	sub	sp, sp, #4	; 0x4
+     cc0:	e1a03000 	mov	r3, r0
+     cc4:	e1a02001 	mov	r2, r1
+     cc8:	e54b300d 	strb	r3, [fp, #-13]
+     ccc:	e1a03002 	mov	r3, r2
+     cd0:	e54b300e 	strb	r3, [fp, #-14]
+	UCHAR spd0a,spd1a;
+
+	if(spd0<128)
+     cd4:	e15b30dd 	ldrsb	r3, [fp, #-13]
+     cd8:	e3530000 	cmp	r3, #0	; 0x0
+     cdc:	ba00000c 	blt	d14 <MotorDuty+0x64>
+	{
+		spd0a=255-2*(127-spd0);
+     ce0:	e3e03000 	mvn	r3, #0	; 0x0
+     ce4:	e1a02003 	mov	r2, r3
+     ce8:	e55b300d 	ldrb	r3, [fp, #-13]
+     cec:	e263307f 	rsb	r3, r3, #127	; 0x7f
+     cf0:	e1a03083 	mov	r3, r3, lsl #1
+     cf4:	e0633002 	rsb	r3, r3, r2
+     cf8:	e54b300f 	strb	r3, [fp, #-15]
+		IO1CLR=0x00040000;
+     cfc:	e3a0320e 	mov	r3, #-536870912	; 0xe0000000
+     d00:	e283390a 	add	r3, r3, #163840	; 0x28000
+     d04:	e283301c 	add	r3, r3, #28	; 0x1c
+     d08:	e3a02701 	mov	r2, #262144	; 0x40000
+     d0c:	e5832000 	str	r2, [r3]
+     d10:	ea00000e 	b	d50 <MotorDuty+0xa0>
+	}
+	else
+	{
+		spd0a=255-2*(spd0-128);
+     d14:	e55b200d 	ldrb	r2, [fp, #-13]
+     d18:	e1a03002 	mov	r3, r2
+     d1c:	e1a03f83 	mov	r3, r3, lsl #31
+     d20:	e0623003 	rsb	r3, r2, r3
+     d24:	e1a01083 	mov	r1, r3, lsl #1
+     d28:	e3e03000 	mvn	r3, #0	; 0x0
+     d2c:	e1a02003 	mov	r2, r3
+     d30:	e1a03001 	mov	r3, r1
+     d34:	e0833002 	add	r3, r3, r2
+     d38:	e54b300f 	strb	r3, [fp, #-15]
+		IO1SET=0x00040000;
+     d3c:	e3a0320e 	mov	r3, #-536870912	; 0xe0000000
+     d40:	e283390a 	add	r3, r3, #163840	; 0x28000
+     d44:	e2833014 	add	r3, r3, #20	; 0x14
+     d48:	e3a02701 	mov	r2, #262144	; 0x40000
+     d4c:	e5832000 	str	r2, [r3]
+	}
+
+	if(spd1<128)
+     d50:	e15b30de 	ldrsb	r3, [fp, #-14]
+     d54:	e3530000 	cmp	r3, #0	; 0x0
+     d58:	ba00000c 	blt	d90 <MotorDuty+0xe0>
+	{
+		spd1a=255-2*(127-spd1);
+     d5c:	e3e03000 	mvn	r3, #0	; 0x0
+     d60:	e1a02003 	mov	r2, r3
+     d64:	e55b300e 	ldrb	r3, [fp, #-14]
+     d68:	e263307f 	rsb	r3, r3, #127	; 0x7f
+     d6c:	e1a03083 	mov	r3, r3, lsl #1
+     d70:	e0633002 	rsb	r3, r3, r2
+     d74:	e54b3010 	strb	r3, [fp, #-16]
+		IO1CLR=0x00080000;
+     d78:	e3a0320e 	mov	r3, #-536870912	; 0xe0000000
+     d7c:	e283390a 	add	r3, r3, #163840	; 0x28000
+     d80:	e283301c 	add	r3, r3, #28	; 0x1c
+     d84:	e3a02702 	mov	r2, #524288	; 0x80000
+     d88:	e5832000 	str	r2, [r3]
+     d8c:	ea00000e 	b	dcc <MotorDuty+0x11c>
+	}
+	else
+	{
+		spd1a=255-2*(spd1-128);
+     d90:	e55b200e 	ldrb	r2, [fp, #-14]
+     d94:	e1a03002 	mov	r3, r2
+     d98:	e1a03f83 	mov	r3, r3, lsl #31
+     d9c:	e0623003 	rsb	r3, r2, r3
+     da0:	e1a01083 	mov	r1, r3, lsl #1
+     da4:	e3e03000 	mvn	r3, #0	; 0x0
+     da8:	e1a02003 	mov	r2, r3
+     dac:	e1a03001 	mov	r3, r1
+     db0:	e0833002 	add	r3, r3, r2
+     db4:	e54b3010 	strb	r3, [fp, #-16]
+		IO1SET=0x00080000;
+     db8:	e3a0320e 	mov	r3, #-536870912	; 0xe0000000
+     dbc:	e283390a 	add	r3, r3, #163840	; 0x28000
+     dc0:	e2833014 	add	r3, r3, #20	; 0x14
+     dc4:	e3a02702 	mov	r2, #524288	; 0x80000
+     dc8:	e5832000 	str	r2, [r3]
+	}
+		
+	PWMMR2=spd0a;
+     dcc:	e3a0320e 	mov	r3, #-536870912	; 0xe0000000
+     dd0:	e2833905 	add	r3, r3, #81920	; 0x14000
+     dd4:	e2833020 	add	r3, r3, #32	; 0x20
+     dd8:	e55b200f 	ldrb	r2, [fp, #-15]
+     ddc:	e5832000 	str	r2, [r3]
+	PWMMR5=spd1a;
+     de0:	e3a0320e 	mov	r3, #-536870912	; 0xe0000000
+     de4:	e2833905 	add	r3, r3, #81920	; 0x14000
+     de8:	e2833044 	add	r3, r3, #68	; 0x44
+     dec:	e55b2010 	ldrb	r2, [fp, #-16]
+     df0:	e5832000 	str	r2, [r3]
+	PWMLER=0x24;
+     df4:	e3a0320e 	mov	r3, #-536870912	; 0xe0000000
+     df8:	e2833905 	add	r3, r3, #81920	; 0x14000
+     dfc:	e2833050 	add	r3, r3, #80	; 0x50
+     e00:	e3a02024 	mov	r2, #36	; 0x24
+     e04:	e5832000 	str	r2, [r3]
+}
+     e08:	e89da808 	ldmia	sp, {r3, fp, sp, pc}
+
+00000e0c <MotorFault>:
+
+UCHAR MotorFault()
+{
+     e0c:	e1a0c00d 	mov	ip, sp
+     e10:	e92dd800 	stmdb	sp!, {fp, ip, lr, pc}
+     e14:	e24cb004 	sub	fp, ip, #4	; 0x4
+	return (IO1PIN>>21) & 0x03;
+     e18:	e3a0320e 	mov	r3, #-536870912	; 0xe0000000
+     e1c:	e283390a 	add	r3, r3, #163840	; 0x28000
+     e20:	e2833010 	add	r3, r3, #16	; 0x10
+     e24:	e5933000 	ldr	r3, [r3]
+     e28:	e1a03aa3 	mov	r3, r3, lsr #21
+     e2c:	e20330ff 	and	r3, r3, #255	; 0xff
+     e30:	e2033003 	and	r3, r3, #3	; 0x3
+}
+     e34:	e1a00003 	mov	r0, r3
+     e38:	e89da800 	ldmia	sp, {fp, sp, pc}
+
+00000e3c <ServoInt>:
+UINT ServoVal[5];
+int ServoFlag;
+
+void ServoInt()
+{
+     e3c:	e52dc004 	str	ip, [sp, #-4]!
+     e40:	e1a0c00d 	mov	ip, sp
+     e44:	e92dd80c 	stmdb	sp!, {r2, r3, fp, ip, lr, pc}
+     e48:	e24cb004 	sub	fp, ip, #4	; 0x4
+	if(ServoFlag)
+     e4c:	e59f30ec 	ldr	r3, [pc, #236]	; f40 <.text+0xf40>
+     e50:	e5933000 	ldr	r3, [r3]
+     e54:	e3530000 	cmp	r3, #0	; 0x0
+     e58:	0a000009 	beq	e84 <ServoInt+0x48>
+	{
+		T1MR0=ServoVal[4];
+     e5c:	e3a0320e 	mov	r3, #-536870912	; 0xe0000000
+     e60:	e2833902 	add	r3, r3, #32768	; 0x8000
+     e64:	e2833018 	add	r3, r3, #24	; 0x18
+     e68:	e59f20d4 	ldr	r2, [pc, #212]	; f44 <.text+0xf44>
+     e6c:	e5922010 	ldr	r2, [r2, #16]
+     e70:	e5832000 	str	r2, [r3]
+		ServoFlag=0;
+     e74:	e59f20c4 	ldr	r2, [pc, #196]	; f40 <.text+0xf40>
+     e78:	e3a03000 	mov	r3, #0	; 0x0
+     e7c:	e5823000 	str	r3, [r2]
+     e80:	ea000023 	b	f14 <ServoInt+0xd8>
+	}
+	else
+	{
+		T1MR0=ServoVal[0];
+     e84:	e3a0320e 	mov	r3, #-536870912	; 0xe0000000
+     e88:	e2833902 	add	r3, r3, #32768	; 0x8000
+     e8c:	e2833018 	add	r3, r3, #24	; 0x18
+     e90:	e59f20ac 	ldr	r2, [pc, #172]	; f44 <.text+0xf44>
+     e94:	e5922000 	ldr	r2, [r2]
+     e98:	e5832000 	str	r2, [r3]
+		T1MR1=ServoVal[1];
+     e9c:	e3a0320e 	mov	r3, #-536870912	; 0xe0000000
+     ea0:	e2833902 	add	r3, r3, #32768	; 0x8000
+     ea4:	e283301c 	add	r3, r3, #28	; 0x1c
+     ea8:	e59f2094 	ldr	r2, [pc, #148]	; f44 <.text+0xf44>
+     eac:	e5922004 	ldr	r2, [r2, #4]
+     eb0:	e5832000 	str	r2, [r3]
+		T1MR2=ServoVal[2];
+     eb4:	e3a0320e 	mov	r3, #-536870912	; 0xe0000000
+     eb8:	e2833902 	add	r3, r3, #32768	; 0x8000
+     ebc:	e2833020 	add	r3, r3, #32	; 0x20
+     ec0:	e59f207c 	ldr	r2, [pc, #124]	; f44 <.text+0xf44>
+     ec4:	e5922008 	ldr	r2, [r2, #8]
+     ec8:	e5832000 	str	r2, [r3]
+		T1MR3=ServoVal[3];
+     ecc:	e3a0320e 	mov	r3, #-536870912	; 0xe0000000
+     ed0:	e2833902 	add	r3, r3, #32768	; 0x8000
+     ed4:	e2833024 	add	r3, r3, #36	; 0x24
+     ed8:	e59f2064 	ldr	r2, [pc, #100]	; f44 <.text+0xf44>
+     edc:	e592200c 	ldr	r2, [r2, #12]
+     ee0:	e5832000 	str	r2, [r3]
+		T1TC=0;
+     ee4:	e3a03902 	mov	r3, #32768	; 0x8000
+     ee8:	e283328e 	add	r3, r3, #-536870904	; 0xe0000008
+     eec:	e3a02000 	mov	r2, #0	; 0x0
+     ef0:	e5832000 	str	r2, [r3]
+		T1EMR=0x0aa0;
+     ef4:	e3a0320e 	mov	r3, #-536870912	; 0xe0000000
+     ef8:	e2833902 	add	r3, r3, #32768	; 0x8000
+     efc:	e283303c 	add	r3, r3, #60	; 0x3c
+     f00:	e3a02eaa 	mov	r2, #2720	; 0xaa0
+     f04:	e5832000 	str	r2, [r3]
+		ServoFlag=1;
+     f08:	e59f2030 	ldr	r2, [pc, #48]	; f40 <.text+0xf40>
+     f0c:	e3a03001 	mov	r3, #1	; 0x1
+     f10:	e5823000 	str	r3, [r2]
+	}
+	
+	T1IR=0x01;
+     f14:	e3a0320e 	mov	r3, #-536870912	; 0xe0000000
+     f18:	e2833902 	add	r3, r3, #32768	; 0x8000
+     f1c:	e3a02001 	mov	r2, #1	; 0x1
+     f20:	e5832000 	str	r2, [r3]
+	VICVECTADDR=0x0;	//reset VIC
+     f24:	e3e03d3f 	mvn	r3, #4032	; 0xfc0
+     f28:	e243300f 	sub	r3, r3, #15	; 0xf
+     f2c:	e3a02000 	mov	r2, #0	; 0x0
+     f30:	e5832000 	str	r2, [r3]
+}
+     f34:	e89d680c 	ldmia	sp, {r2, r3, fp, sp, lr}
+     f38:	e8bd1000 	ldmia	sp!, {ip}
+     f3c:	e25ef004 	subs	pc, lr, #4	; 0x4
+     f40:	400002ec 	andmi	r0, r0, ip, ror #5
+     f44:	400002d8 	ldrmid	r0, [r0], -r8
+
+00000f48 <SetServo>:
+
+void SetServo(int servo, int val)
+{
+     f48:	e1a0c00d 	mov	ip, sp
+     f4c:	e92dd800 	stmdb	sp!, {fp, ip, lr, pc}
+     f50:	e24cb004 	sub	fp, ip, #4	; 0x4
+     f54:	e24dd008 	sub	sp, sp, #8	; 0x8
+     f58:	e50b0010 	str	r0, [fp, #-16]
+     f5c:	e50b1014 	str	r1, [fp, #-20]
+	ServoVal[servo]=256+val;
+     f60:	e59f1020 	ldr	r1, [pc, #32]	; f88 <.text+0xf88>
+     f64:	e51b2010 	ldr	r2, [fp, #-16]
+     f68:	e51b3014 	ldr	r3, [fp, #-20]
+     f6c:	e2833c01 	add	r3, r3, #256	; 0x100
+     f70:	e7813102 	str	r3, [r1, r2, lsl #2]
+
+	ServoVal[4]=10*512;
+     f74:	e59f200c 	ldr	r2, [pc, #12]	; f88 <.text+0xf88>
+     f78:	e3a03b05 	mov	r3, #5120	; 0x1400
+     f7c:	e5823010 	str	r3, [r2, #16]
+	
+
+}
+     f80:	e24bd00c 	sub	sp, fp, #12	; 0xc
+     f84:	e89da800 	ldmia	sp, {fp, sp, pc}
+     f88:	400002d8 	ldrmid	r0, [r0], -r8
+
+00000f8c <ServoInit>:
+
+void ServoInit()
+{
+     f8c:	e1a0c00d 	mov	ip, sp
+     f90:	e92dd800 	stmdb	sp!, {fp, ip, lr, pc}
+     f94:	e24cb004 	sub	fp, ip, #4	; 0x4
+	//setup timer
+	T1TCR=0x3;
+     f98:	e3a03902 	mov	r3, #32768	; 0x8000
+     f9c:	e283324e 	add	r3, r3, #-536870908	; 0xe0000004
+     fa0:	e3a02003 	mov	r2, #3	; 0x3
+     fa4:	e5832000 	str	r2, [r3]
+	T1PR=234;
+     fa8:	e3a03902 	mov	r3, #32768	; 0x8000
+     fac:	e28332ce 	add	r3, r3, #-536870900	; 0xe000000c
+     fb0:	e3a020ea 	mov	r2, #234	; 0xea
+     fb4:	e5832000 	str	r2, [r3]
+
+	ServoFlag=1;
+     fb8:	e59f2148 	ldr	r2, [pc, #328]	; 1108 <.text+0x1108>
+     fbc:	e3a03001 	mov	r3, #1	; 0x1
+     fc0:	e5823000 	str	r3, [r2]
+	SetServo(0,128);
+     fc4:	e3a00000 	mov	r0, #0	; 0x0
+     fc8:	e3a01080 	mov	r1, #128	; 0x80
+     fcc:	ebffffdd 	bl	f48 <SetServo>
+	SetServo(1,128);
+     fd0:	e3a00001 	mov	r0, #1	; 0x1
+     fd4:	e3a01080 	mov	r1, #128	; 0x80
+     fd8:	ebffffda 	bl	f48 <SetServo>
+	SetServo(2,128);
+     fdc:	e3a00002 	mov	r0, #2	; 0x2
+     fe0:	e3a01080 	mov	r1, #128	; 0x80
+     fe4:	ebffffd7 	bl	f48 <SetServo>
+	SetServo(3,128);
+     fe8:	e3a00003 	mov	r0, #3	; 0x3
+     fec:	e3a01080 	mov	r1, #128	; 0x80
+     ff0:	ebffffd4 	bl	f48 <SetServo>
+	
+	T1MCR=0x1;
+     ff4:	e3a0320e 	mov	r3, #-536870912	; 0xe0000000
+     ff8:	e2833902 	add	r3, r3, #32768	; 0x8000
+     ffc:	e2833014 	add	r3, r3, #20	; 0x14
+    1000:	e3a02001 	mov	r2, #1	; 0x1
+    1004:	e5832000 	str	r2, [r3]
+	T1MR0=ServoVal[0];
+    1008:	e3a0320e 	mov	r3, #-536870912	; 0xe0000000
+    100c:	e2833902 	add	r3, r3, #32768	; 0x8000
+    1010:	e2833018 	add	r3, r3, #24	; 0x18
+    1014:	e59f20f0 	ldr	r2, [pc, #240]	; 110c <.text+0x110c>
+    1018:	e5922000 	ldr	r2, [r2]
+    101c:	e5832000 	str	r2, [r3]
+	T1MR1=ServoVal[1];
+    1020:	e3a0320e 	mov	r3, #-536870912	; 0xe0000000
+    1024:	e2833902 	add	r3, r3, #32768	; 0x8000
+    1028:	e283301c 	add	r3, r3, #28	; 0x1c
+    102c:	e59f20d8 	ldr	r2, [pc, #216]	; 110c <.text+0x110c>
+    1030:	e5922004 	ldr	r2, [r2, #4]
+    1034:	e5832000 	str	r2, [r3]
+	T1MR2=ServoVal[2];
+    1038:	e3a0320e 	mov	r3, #-536870912	; 0xe0000000
+    103c:	e2833902 	add	r3, r3, #32768	; 0x8000
+    1040:	e2833020 	add	r3, r3, #32	; 0x20
+    1044:	e59f20c0 	ldr	r2, [pc, #192]	; 110c <.text+0x110c>
+    1048:	e5922008 	ldr	r2, [r2, #8]
+    104c:	e5832000 	str	r2, [r3]
+	T1MR3=ServoVal[3];
+    1050:	e3a0320e 	mov	r3, #-536870912	; 0xe0000000
+    1054:	e2833902 	add	r3, r3, #32768	; 0x8000
+    1058:	e2833024 	add	r3, r3, #36	; 0x24
+    105c:	e59f20a8 	ldr	r2, [pc, #168]	; 110c <.text+0x110c>
+    1060:	e592200c 	ldr	r2, [r2, #12]
+    1064:	e5832000 	str	r2, [r3]
+	T1EMR=0x0550;
+    1068:	e3a0320e 	mov	r3, #-536870912	; 0xe0000000
+    106c:	e2833902 	add	r3, r3, #32768	; 0x8000
+    1070:	e283303c 	add	r3, r3, #60	; 0x3c
+    1074:	e3a02e55 	mov	r2, #1360	; 0x550
+    1078:	e5832000 	str	r2, [r3]
+	
+	T1IR=0xff;
+    107c:	e3a0320e 	mov	r3, #-536870912	; 0xe0000000
+    1080:	e2833902 	add	r3, r3, #32768	; 0x8000
+    1084:	e3a020ff 	mov	r2, #255	; 0xff
+    1088:	e5832000 	str	r2, [r3]
+	PINSEL0|=0x0a000000;
+    108c:	e3a0220e 	mov	r2, #-536870912	; 0xe0000000
+    1090:	e282290b 	add	r2, r2, #180224	; 0x2c000
+    1094:	e3a0320e 	mov	r3, #-536870912	; 0xe0000000
+    1098:	e283390b 	add	r3, r3, #180224	; 0x2c000
+    109c:	e5933000 	ldr	r3, [r3]
+    10a0:	e383340a 	orr	r3, r3, #167772160	; 0xa000000
+    10a4:	e5823000 	str	r3, [r2]
+	PINSEL1|=0x0000010c;
+    10a8:	e3a0224e 	mov	r2, #-536870908	; 0xe0000004
+    10ac:	e282290b 	add	r2, r2, #180224	; 0x2c000
+    10b0:	e3a0324e 	mov	r3, #-536870908	; 0xe0000004
+    10b4:	e283390b 	add	r3, r3, #180224	; 0x2c000
+    10b8:	e5933000 	ldr	r3, [r3]
+    10bc:	e3833f43 	orr	r3, r3, #268	; 0x10c
+    10c0:	e5823000 	str	r3, [r2]
+	
+
+	//init interrupts
+	VICINTENABLE=0x20;
+    10c4:	e3e03efe 	mvn	r3, #4064	; 0xfe0
+    10c8:	e243300f 	sub	r3, r3, #15	; 0xf
+    10cc:	e3a02020 	mov	r2, #32	; 0x20
+    10d0:	e5832000 	str	r2, [r3]
+	VICVECTCNTL5=0x20 | 5;
+    10d4:	e3e03ede 	mvn	r3, #3552	; 0xde0
+    10d8:	e243300b 	sub	r3, r3, #11	; 0xb
+    10dc:	e3a02025 	mov	r2, #37	; 0x25
+    10e0:	e5832000 	str	r2, [r3]
+	VICVECTADDR5=(UINT)ServoInt;
+    10e4:	e3e03eee 	mvn	r3, #3808	; 0xee0
+    10e8:	e243300b 	sub	r3, r3, #11	; 0xb
+    10ec:	e59f201c 	ldr	r2, [pc, #28]	; 1110 <.text+0x1110>
+    10f0:	e5832000 	str	r2, [r3]
+	T1TCR=0x1;	
+    10f4:	e3a03902 	mov	r3, #32768	; 0x8000
+    10f8:	e283324e 	add	r3, r3, #-536870908	; 0xe0000004
+    10fc:	e3a02001 	mov	r2, #1	; 0x1
+    1100:	e5832000 	str	r2, [r3]
+}
+    1104:	e89da800 	ldmia	sp, {fp, sp, pc}
+    1108:	400002ec 	andmi	r0, r0, ip, ror #5
+    110c:	400002d8 	ldrmid	r0, [r0], -r8
+    1110:	00000e3c 	andeq	r0, r0, ip, lsr lr
+
+00001114 <ADCInt>:
+
+void ADCInt() __attribute__((interrupt("IRQ")));
+
+void ADCInt()
+{
+    1114:	e52dc004 	str	ip, [sp, #-4]!
+    1118:	e1a0c00d 	mov	ip, sp
+    111c:	e92dd80c 	stmdb	sp!, {r2, r3, fp, ip, lr, pc}
+    1120:	e24cb004 	sub	fp, ip, #4	; 0x4
+    1124:	e24dd008 	sub	sp, sp, #8	; 0x8
+	UINT val=AD0DR;
+    1128:	e3a0324e 	mov	r3, #-536870908	; 0xe0000004
+    112c:	e283390d 	add	r3, r3, #212992	; 0x34000
+    1130:	e5933000 	ldr	r3, [r3]
+    1134:	e50b3018 	str	r3, [fp, #-24]
+	int channel=(val>>24)&0x7;
+    1138:	e51b3018 	ldr	r3, [fp, #-24]
+    113c:	e1a03c23 	mov	r3, r3, lsr #24
+    1140:	e2033007 	and	r3, r3, #7	; 0x7
+    1144:	e50b301c 	str	r3, [fp, #-28]
+	ADCVal[channel]=val & 0xffff;
+    1148:	e59f2030 	ldr	r2, [pc, #48]	; 1180 <.text+0x1180>
+    114c:	e51b301c 	ldr	r3, [fp, #-28]
+    1150:	e1a03083 	mov	r3, r3, lsl #1
+    1154:	e0832002 	add	r2, r3, r2
+    1158:	e51b3018 	ldr	r3, [fp, #-24]
+    115c:	e1c230b0 	strh	r3, [r2]
+
+	VICVECTADDR=0x0;	//reset VIC
+    1160:	e3e03d3f 	mvn	r3, #4032	; 0xfc0
+    1164:	e243300f 	sub	r3, r3, #15	; 0xf
+    1168:	e3a02000 	mov	r2, #0	; 0x0
+    116c:	e5832000 	str	r2, [r3]
+}
+    1170:	e24bd014 	sub	sp, fp, #20	; 0x14
+    1174:	e89d680c 	ldmia	sp, {r2, r3, fp, sp, lr}
+    1178:	e8bd1000 	ldmia	sp!, {ip}
+    117c:	e25ef004 	subs	pc, lr, #4	; 0x4
+    1180:	400002f0 	strmid	r0, [r0], -r0
+
+00001184 <ADCInit>:
+
+void ADCInit()
+{
+    1184:	e1a0c00d 	mov	ip, sp
+    1188:	e92dd800 	stmdb	sp!, {fp, ip, lr, pc}
+    118c:	e24cb004 	sub	fp, ip, #4	; 0x4
+	PINSEL1|=0x01400000;	//connect AD0.0 AD0.1 to ADC
+    1190:	e3a0224e 	mov	r2, #-536870908	; 0xe0000004
+    1194:	e282290b 	add	r2, r2, #180224	; 0x2c000
+    1198:	e3a0324e 	mov	r3, #-536870908	; 0xe0000004
+    119c:	e283390b 	add	r3, r3, #180224	; 0x2c000
+    11a0:	e5933000 	ldr	r3, [r3]
+    11a4:	e3833505 	orr	r3, r3, #20971520	; 0x1400000
+    11a8:	e5823000 	str	r3, [r2]
+	AD0CR=0x00210d03;
+    11ac:	e3a0220e 	mov	r2, #-536870912	; 0xe0000000
+    11b0:	e282290d 	add	r2, r2, #212992	; 0x34000
+    11b4:	e3a03821 	mov	r3, #2162688	; 0x210000
+    11b8:	e2833c0d 	add	r3, r3, #3328	; 0xd00
+    11bc:	e2833003 	add	r3, r3, #3	; 0x3
+    11c0:	e5823000 	str	r3, [r2]
+
+	//init interrupts
+	VICINTENABLE=0x40000;
+    11c4:	e3e03efe 	mvn	r3, #4064	; 0xfe0
+    11c8:	e243300f 	sub	r3, r3, #15	; 0xf
+    11cc:	e3a02701 	mov	r2, #262144	; 0x40000
+    11d0:	e5832000 	str	r2, [r3]
+	VICVECTCNTL9=0x20 | 18;
+    11d4:	e3e03edd 	mvn	r3, #3536	; 0xdd0
+    11d8:	e243300b 	sub	r3, r3, #11	; 0xb
+    11dc:	e3a02032 	mov	r2, #50	; 0x32
+    11e0:	e5832000 	str	r2, [r3]
+	VICVECTADDR9=(UINT)ADCInt;
+    11e4:	e3e03eed 	mvn	r3, #3792	; 0xed0
+    11e8:	e243300b 	sub	r3, r3, #11	; 0xb
+    11ec:	e59f2004 	ldr	r2, [pc, #4]	; 11f8 <.text+0x11f8>
+    11f0:	e5832000 	str	r2, [r3]
+
+}
+    11f4:	e89da800 	ldmia	sp, {fp, sp, pc}
+    11f8:	00001114 	andeq	r1, r0, r4, lsl r1
+
+000011fc <ADCFillValues>:
+
+int ADCFillValues(UCHAR *buf)
+{
+    11fc:	e1a0c00d 	mov	ip, sp
+    1200:	e92dd800 	stmdb	sp!, {fp, ip, lr, pc}
+    1204:	e24cb004 	sub	fp, ip, #4	; 0x4
+    1208:	e24dd00c 	sub	sp, sp, #12	; 0xc
+    120c:	e50b0010 	str	r0, [fp, #-16]
+	int len=0;
+    1210:	e3a03000 	mov	r3, #0	; 0x0
+    1214:	e50b3014 	str	r3, [fp, #-20]
+	int i;
+
+	for(i=0;i<ADC_NUM_CHANNELS;i++)
+    1218:	e3a03000 	mov	r3, #0	; 0x0
+    121c:	e50b3018 	str	r3, [fp, #-24]
+    1220:	e51b3018 	ldr	r3, [fp, #-24]
+    1224:	e3530001 	cmp	r3, #1	; 0x1
+    1228:	ca00001e 	bgt	12a8 <ADCFillValues+0xac>
+	{
+		buf[len++]=ADCVal[i] & 0xff;
+    122c:	e24b0014 	sub	r0, fp, #20	; 0x14
+    1230:	e5901000 	ldr	r1, [r0]
+    1234:	e1a02001 	mov	r2, r1
+    1238:	e51b3010 	ldr	r3, [fp, #-16]
+    123c:	e082c003 	add	ip, r2, r3
+    1240:	e59f2070 	ldr	r2, [pc, #112]	; 12b8 <.text+0x12b8>
+    1244:	e51b3018 	ldr	r3, [fp, #-24]
+    1248:	e1a03083 	mov	r3, r3, lsl #1
+    124c:	e0833002 	add	r3, r3, r2
+    1250:	e1d330b0 	ldrh	r3, [r3]
+    1254:	e5cc3000 	strb	r3, [ip]
+    1258:	e2811001 	add	r1, r1, #1	; 0x1
+    125c:	e5801000 	str	r1, [r0]
+		buf[len++]=(ADCVal[i]>>8) & 0xff;
+    1260:	e24b0014 	sub	r0, fp, #20	; 0x14
+    1264:	e5901000 	ldr	r1, [r0]
+    1268:	e1a02001 	mov	r2, r1
+    126c:	e51b3010 	ldr	r3, [fp, #-16]
+    1270:	e082c003 	add	ip, r2, r3
+    1274:	e59f203c 	ldr	r2, [pc, #60]	; 12b8 <.text+0x12b8>
+    1278:	e51b3018 	ldr	r3, [fp, #-24]
+    127c:	e1a03083 	mov	r3, r3, lsl #1
+    1280:	e0833002 	add	r3, r3, r2
+    1284:	e1d330b0 	ldrh	r3, [r3]
+    1288:	e1a03423 	mov	r3, r3, lsr #8
+    128c:	e5cc3000 	strb	r3, [ip]
+    1290:	e2811001 	add	r1, r1, #1	; 0x1
+    1294:	e5801000 	str	r1, [r0]
+    1298:	e51b3018 	ldr	r3, [fp, #-24]
+    129c:	e2833001 	add	r3, r3, #1	; 0x1
+    12a0:	e50b3018 	str	r3, [fp, #-24]
+    12a4:	eaffffdd 	b	1220 <ADCFillValues+0x24>
+	}
+	return len;
+    12a8:	e51b3014 	ldr	r3, [fp, #-20]
+}
+    12ac:	e1a00003 	mov	r0, r3
+    12b0:	e24bd00c 	sub	sp, fp, #12	; 0xc
+    12b4:	e89da800 	ldmia	sp, {fp, sp, pc}
+    12b8:	400002f0 	strmid	r0, [r0], -r0

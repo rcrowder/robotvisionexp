@@ -1,0 +1,10 @@
+arm7_9 dcc_downloads enable
+wait_halt
+sleep 10
+poll
+flash probe 0
+flash erase 0 0 1
+flash write_binary 0 main.bin 0
+reset run
+sleep 10
+shutdown
