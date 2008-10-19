@@ -39,6 +39,8 @@ make source
 
 Finally we can copy over the coglinux root file system device table into the generic target. And run the final make.
 
+Note: Make sure that you install the Zlib development package via Synaptic Package Manager.
+
 {{{
 cp ~/dev/rootfs/devtable.txt ~/dev/buildroot/target/generic/device_table.txt
 sudo apt-get install liblzo2-dev acl-dev 
