@@ -9,55 +9,31 @@ _*!!Use at your own risk!!*_
 
 = Details =
 
-First we need to grab the latest SVN snapshot.
+First we need to grab the latest SVN snapshot, and setup buildroot.
 
 {{{
 cd ~/dev
 svn co svn://uclibc.org/trunk/buildroot
-}}}
-
-Now for the latest MTD GIT
-
-{{{
-cd ~/dev
-git clone git://git.infradead.org/mtd-2.6.git mtd-2.6
-}}}
-
-And make sure that the baseline default VCMX212 config is used.
-
-BUSYBOX_CONFIG_FILE=~/dev/busybox_vcmx212_defconfig
-
-Tar up the VC CVS 2.6.22 linux.
-
-{{{
-cd ~/dev/coglinux
-mv coglinux-2.6.22 linux-2.6.22-vc
-cd linux-2.6.22-vc/arch/arm/configs
-cp vcmx212_defconfig arm_defconfig
-cd ~/dev/coglinux
-tar -cvf linux-2.6.22-vc.tar linux-2.6.22-vc/
-bzip2 -c linux-2.6.22-vc.tar > linux-2.6.22-vc.tar.bz2
-rm linux-2.6.22.tar
-mkdir ~/dev/buildroot/dl
-cp linux-2.6.22-vc.tar.bz2 ~/dev/buildroot/dl
-}}}
-
-Setup buildroot config
-
-{{{
 cd ~/dev/buildroot
 make menuconfig
-gedit .config (to overcome issues with Linux header version)
-make source
-cp ~/dev/coglinux/rootfs/devtable.txt ~/dev/buildroot/target/generic/device_table.txt
-make
 }}}
 
+Most of the settings are obvious. The main one to modify is the location of the busy box configuration file. Included in the Downloads section here is a slimmed down BB configuration that matches the original coglinux.jffs2 contents.
+
+We are building coglinux separately, so no need to build a Linux kernel.
+
+For the Target filesystem options, make sure that 'jffs2 root filesystem' is selected. And the 'Memory Type' is changed to '4 kB pagesize and 64 kB erase size'.
+
+Now we need to prepare the target directory structure, and download the latest sources.
+
 {{{
+make source
+}}}
+
+Finally we can copy over the coglinux root filesystem device table into the generic target. And run the final make.
+
+{{{
+cp ~/dev/rootfs/devtable.txt ~/dev/buildroot/target/generic/device_table.txt
 sudo apt-get install liblzo2-dev acl-dev 
 make WITHOUT_XATTR=1
-}}}
-
-{{{
-gedit drivers/mtd/chips/cfi_cmdset_0001.c : do_erase_oneblock() function, Change line to "int retries = 30;"
 }}}
