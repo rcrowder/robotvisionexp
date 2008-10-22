@@ -150,6 +150,13 @@ cat /sys/bus/usb/devices/2-2/product should equal "Olimex OpenOCD JTAG TINY"
 
 == Eclipse ==
 
+Install from Eclipse website. Update Java;
+{{{
+sudo apt-get install sun-java6-jdk
+sudo update-alternatives --config java
+}}}
+Install Zylin CDT (http://www.zylin.com/zylincdt)
+
 Qt integration (http://trolltech.com/developer/downloads/qt/eclipse-integration-download)
 
   * TODO: OpenOCD/GDB integration
