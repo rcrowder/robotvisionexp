@@ -81,6 +81,17 @@ rm patches/glibc-2.3.2/glibc-2.3.3-allow-gcc-4.0-configure.patch~
 
 If you get issues with version-info.h missing terminating " character, you need to upgrate automake to v1.9+ This forum [http://www.triple-dragon-fan.de/board/thread.php?threadid=2846 thread] describes the problem and fixes.
 
+=== Insight / GDB === 
+
+{{{
+cd ~/dev/insight-6.6
+sudo apt-get install libx11-dev
+./configure --prefix=/opt/crosstool/gcc-4.0.2-glibc-2.3.2/arm-linux --target=arm-linux
+make
+sudo make install
+}}}
+Test using arm-linux-insight
+
 == Libraries & Drivers ==
 
 === Silabs USB Bridge ===
