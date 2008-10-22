@@ -148,6 +148,16 @@ cat /sys/bus/usb/devices/2-2/manufacturer should equal "Olimex"
 cat /sys/bus/usb/devices/2-2/product should equal "Olimex OpenOCD JTAG TINY"
 }}}
 
+We now need to set up the permissions correctly for the Olimex JTAG programmer. Create a file called /etc/udev/rules.d/45-ft2232.rules with the following text:
+{{{
+BUS!="usb", ACTION!="add", SUBSYSTEM!=="usb_device", GOTO="kcontrol_rules_end"
+
+SYSFS{idProduct}=="0004", SYSFS{idVendor}=="15ba", MODE="664", GROUP="adm"
+
+LABEL="kcontrol_rules_end"
+}}}
+You will have to reboot your machine for the changes to take effect. 
+
 == Eclipse ==
 
 Install from Eclipse website. Update Java;
